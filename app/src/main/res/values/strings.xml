@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Memories</string>
+    <string name="play">JOUER</string>
+    <string name="menu">MENU</string>
+    <string name="photos">PHOTOS</string>
+    <string name="howmanycards">Combien de cartes voulez-vous ?</string>
+    <string name="validate">VALIDER</string>
+    <string name="baseNumberOfCards">18</string>²
+
+</resources>

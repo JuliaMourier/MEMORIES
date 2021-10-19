@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/choice_number_menu_validate_b"
+        android:layout_width="310dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="3dp"
+        android:text="@string/validate"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.455"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choice_number_menu_number_n" />
+
+    <TextView
+        android:id="@+id/choice_number_menu_how_many_t"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="120dp"
+        android:text="@string/howmanycards"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/choice_number_menu_number_n"
+        android:layout_width="162dp"
+        android:layout_height="83dp"
+        android:layout_marginTop="60dp"
+        android:background="#FFFFFF"
+        android:drawableLeft="@color/black"
+        android:drawableRight="@color/black"
+        android:drawableBottom="@color/black"
+        android:ems="10"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choice_number_menu_how_many_t"
+        tools:text="18" />
+
+    <ImageButton
+        android:id="@+id/choice_number_menu_plus_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="75dp"
+        android:layout_marginEnd="30dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/choice_number_menu_number_n"
+        app:layout_constraintTop_toBottomOf="@+id/choice_number_menu_how_many_t"
+        app:srcCompat="@drawable/plus" />
+
+    <ImageButton
+        android:id="@+id/choice_number_menu_minus_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="75dp"
+        android:layout_marginEnd="10dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toStartOf="@+id/choice_number_menu_number_n"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choice_number_menu_how_many_t"
+        app:srcCompat="@drawable/minus" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
