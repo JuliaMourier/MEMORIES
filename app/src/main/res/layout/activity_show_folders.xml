@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:rowCount="4"
         android:columnCount="4"
-        android:id="@+id/folder_grid">
+        android:id="@+id/folder_grid"
+        android:layout_gravity="center_horizontal"
+        android:useDefaultMargins="true">
     </GridLayout>
     <FrameLayout
         android:layout_width="match_parent"
@@ -22,7 +24,10 @@
             android:layout_height="wrap_content"
             android:src="@drawable/plus"
             android:id="@+id/add_button"
-            android:layout_gravity="right"></ImageButton>
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"></ImageButton>
     </FrameLayout>
 
 </FrameLayout>

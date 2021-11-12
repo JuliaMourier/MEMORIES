@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -18,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +42,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
         dpWidth  = outMetrics.widthPixels / density;
         rowCount =4;
         columnCount=4;
+
         folderIconPxSize = (int)(outMetrics.widthPixels/columnCount);
         this.foldersGridLayout= (GridLayout)findViewById(R.id.folder_grid);
         this.addButton = findViewById(R.id.add_button);
@@ -60,6 +63,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         //Setting the title manually
         alert.setTitle("Création dossier");
+        alert.getWindow().getAttributes().windowAnimations=R.style.MyDialogAnimation;
         alert.show();
     }
     protected void setOnClick(ImageButton button, ShowFoldersActivity activity){
@@ -77,9 +81,9 @@ public class ShowFoldersActivity extends AppCompatActivity {
         builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String folderNameText = editText.getText().toString();
-                if(folderNameText!=""){
+                if(!folderNameText.equals("")){
                     ViewGroup.LayoutParams paramsFrameLayout = new ActionBar.LayoutParams(folderIconPxSize,folderIconPxSize);
-                    ViewGroup.LayoutParams paramsIcon = new ViewGroup.LayoutParams((int)(folderIconPxSize*0.8), (int)(folderIconPxSize*0.8));
+                    FrameLayout.LayoutParams paramsIcon = new FrameLayout.LayoutParams((int)(folderIconPxSize*0.8), (int)(folderIconPxSize*0.8));
                     FrameLayout.LayoutParams paramsText = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
                     FrameLayout cellFolderIcon = new FrameLayout(activity);
@@ -88,14 +92,20 @@ public class ShowFoldersActivity extends AppCompatActivity {
 
                     cellFolderIcon.setLayoutParams(paramsFrameLayout);
                     folderName.setText(folderNameText);
-                    paramsText.gravity = Gravity.BOTTOM;
+                    paramsText.gravity = Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
                     folderIcon.setLayoutParams(paramsIcon);
+                    paramsIcon.gravity = Gravity.CENTER_HORIZONTAL;
                     folderIcon.setBackgroundResource(R.drawable.folder_icon);
+
                     folderName.setLayoutParams(paramsText);
 
                     cellFolderIcon.addView(folderIcon);
                     cellFolderIcon.addView(folderName);
                     foldersGridLayout.addView(cellFolderIcon);
+                }
+                else{
+                    builder.setMessage("Erreur : le nom doit au moins contenir 1 caractère");
+
                 }
             }
         });
