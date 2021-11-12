@@ -6,6 +6,8 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -46,12 +48,10 @@ public class ShowFoldersActivity extends AppCompatActivity {
 
     }
     protected void addFolder(){
-
         builder.setMessage("Nom de dossier")
                 .setCancelable(false)
                 .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //  Action for 'NO' Button
                         dialog.cancel();
                     }
                 });
@@ -72,6 +72,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
     }
     protected void setOnClick(AlertDialog.Builder builder, ShowFoldersActivity activity){
         EditText editText = new EditText(this);
+        this.setFiltersEditText(editText);
         builder.setView(editText);
         builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -98,5 +99,24 @@ public class ShowFoldersActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void setFiltersEditText(EditText editText){
+        editText.setSingleLine(true);
+        editText.setFilters(new InputFilter[] {
+                new InputFilter() {
+                    public CharSequence filter(CharSequence src, int start,
+                                               int end, Spanned dst, int dstart, int dend) {
+                        if(src.equals("")){ // for backspace
+                            return src;
+                        }
+                        if(src.toString().matches("[a-zA-Z ]+")){
+                            return src;
+                        }
+                        return editText.getText().toString();
+                    }
+                }
+
+        , new InputFilter.LengthFilter(10)});
+        editText.setMaxLines(1);
     }
 }
