@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.game_piece)
         gamePiece = findViewById<View>(R.id.MyDynamicLayout) as GridLayout
 
-        nbImg = 2
+        nbImg = 16
 
 
 
         for (i in 0 until nbImg!!) {
             val image = ImageView(this)
-            val params: ViewGroup.LayoutParams = ActionBar.LayoutParams(100, 100)
+            val params: ViewGroup.LayoutParams = ActionBar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
             image.layoutParams=params
             image.setBackgroundResource(R.drawable.plus)
             gamePiece!!.addView(image)

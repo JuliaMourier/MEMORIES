@@ -1,20 +1,26 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_column="4"
     android:orientation="vertical"
-    android:id="@+id/MyDynamicLayout"
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_row="0"
         android:layout_column="0"
         android:text="Trouvez les paires"
+        android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
+    <GridLayout
+        android:id="@+id/MyDynamicLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:alignmentMode="alignMargins"
+        android:columnCount="4">
 
-</GridLayout>
+    </GridLayout>
+</LinearLayout>
