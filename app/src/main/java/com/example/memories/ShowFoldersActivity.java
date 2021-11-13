@@ -17,7 +17,6 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -97,6 +96,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
                             })
                             .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
+                                    ShowFoldersActivity.this.setAllDeleteButtonsInvisible();
                                     dialog.cancel();
                                 }
                             });
@@ -161,7 +161,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
         builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 String folderNameText = editText.getText().toString();
-                if(!folderNameText.equals("")){
+                if(!folderNameText.equals("") & !activity.foldersNameList.contains(folderNameText)){
                     ViewGroup.LayoutParams paramsFrameLayout = new ActionBar.LayoutParams(folderIconPxSize,folderIconPxSize);
                     FrameLayout.LayoutParams paramsDelete = new FrameLayout.LayoutParams((int)(folderIconPxSize*0.2), (int)(folderIconPxSize*0.2));
                     FrameLayout.LayoutParams paramsIcon = new FrameLayout.LayoutParams((int)(folderIconPxSize*0.8), (int)(folderIconPxSize*0.8));
@@ -190,6 +190,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
                                     })
                                     .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
+                                            ShowFoldersActivity.this.setAllDeleteButtonsInvisible();
                                             dialog.cancel();
                                         }
                                     });
