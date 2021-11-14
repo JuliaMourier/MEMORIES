@@ -1,9 +1,9 @@
 package com.example.memories.Database
 
+
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -12,14 +12,22 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.memories.BuildConfig.MONGODB_REALM_APP_ID
 import com.example.memories.R
+import io.realm.BuildConfig
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.where
-
-
+import io.realm.mongodb.App
+import io.realm.mongodb.AppConfiguration
+import io.realm.mongodb.mongo.MongoClient
 import java.text.SimpleDateFormat
 import java.util.*
+/*
+lateinit var taskApp: App
+inline fun <reified T> T.TAG(): String = T::class.java.simpleName
+const val MONGODB_REALM_APP_ID = "memories-0-nfpqj"*/
+
 
 //Activity for the database
 class DatabaseActivity : AppCompatActivity() {
@@ -30,10 +38,16 @@ class DatabaseActivity : AppCompatActivity() {
     var dateAndTime : String = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) + " " + SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date()); //get the date of the submitting game
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
         Realm.init(this);//Initialisation to the realm
+
+        /*taskApp = App(
+            AppConfiguration.Builder(MONGODB_REALM_APP_ID)
+                .defaultSyncErrorHandler { session, error ->
+                    Log.e(TAG(), "Sync error: ${error.errorMessage}")
+                }
+                .build())*/
+
         //COnfiguration : name of the new data base
         var config : RealmConfiguration = RealmConfiguration.Builder().name("RealmDate.realm").deleteRealmIfMigrationNeeded().build() //.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config)

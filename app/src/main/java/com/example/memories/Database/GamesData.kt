@@ -17,6 +17,7 @@ open class GamesData : RealmObject() {
     fun getGameDataDuration(): String? {
         return gameData_duration
     }
+
     fun getGameData_nbTry(): String? {
         return gameData_nbTry
     }
@@ -30,7 +31,7 @@ open class GamesData : RealmObject() {
     }
 
     fun setGameData_duration(duration: String?){
-        this.gameData_duration = duration
+       this.gameData_duration = duration
     }
 
     fun setGameData_user(gameData_User: String?) {

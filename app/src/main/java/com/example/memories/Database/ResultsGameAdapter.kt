@@ -57,16 +57,28 @@ class ResultsGameAdapter : AppCompatActivity(){
             var i = 0
             try { //get the graphView
                 var graphView : GraphView = findViewById(com.example.memories.R.id.graph)
+                var graphDuration : GraphView = findViewById(com.example.memories.R.id.graph2)
+
                 //Create empty series
                 val series: LineGraphSeries<DataPoint> = LineGraphSeries()
+                val seriesduration: LineGraphSeries<DataPoint> = LineGraphSeries()
 
                 for(game in query.findAll()){ //get through the database
                     //add the data in the graph series
-                    series.appendData(DataPoint(i++.toDouble(), game.getGameData_nbTry().toString().toDouble()), true,100)
+                    if(game.getGameData_nbTry().toString() != null && (game.getGameDataDuration() != null)) {
+                        series.appendData(
+                            DataPoint(
+                                i.toDouble(),
+                                game.getGameData_nbTry().toString().toDouble()
+                            ), true, 100
+                        )
+                        seriesduration.appendData(DataPoint(i++.toDouble(), game.getGameDataDuration().toString().toDouble()),true, 100)
+                    }
                 }
 
                 //COmplete the graph xith the series filled
                 graphView.addSeries(series)
+                graphDuration.addSeries(seriesduration)
             } catch (e: IllegalArgumentException) {
                 //If trouble toast the user
                 Toast.makeText(this@ResultsGameAdapter, e.message, Toast.LENGTH_LONG).show()
