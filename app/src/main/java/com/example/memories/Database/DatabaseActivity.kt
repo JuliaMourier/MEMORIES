@@ -1,7 +1,9 @@
-package com.example.memories
+package com.example.memories.Database
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -10,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.memories.R
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.where
@@ -61,6 +64,12 @@ class DatabaseActivity : AppCompatActivity() {
         realm = Realm.getDefaultInstance()
 
         recoverData() //recover and display the data just saved
+
+        var resultButton: Button = findViewById(R.id.results)
+        resultButton.setOnClickListener(View.OnClickListener { view ->
+            var intent : Intent = Intent(this, ResultsGameAdapter::class.java)
+            startActivity(intent)
+        })
     }
 
     //Save the game data into the database
@@ -78,6 +87,7 @@ class DatabaseActivity : AppCompatActivity() {
             game.setGameData_date(dateAndTime)
             game.setGameData_nbTry(numberOfTry?.text.toString())
             game.setGameData_duration(duration?.text.toString())
+
         }, {
             //If the operation is a success :
             Toast.makeText(this,"Operation Succeeded",Toast.LENGTH_LONG)// Transaction was a success
@@ -97,19 +107,25 @@ class DatabaseActivity : AppCompatActivity() {
     fun recoverData(){
         // Build the query looking at all users:
         val query = realm?.where<GamesData>()
-        var gameText : String = ""
+        var gameText : String = "" //Init the text for data
         if (query != null) {
             val dataText : TextView = findViewById(R.id.datatext)
-            for(game in query.findAll()){
+            for(game in query.findAll()){ //construct a pretty text with all the element of a data game
                 gameText += "\nGame at "
                 gameText += game.getGameData_Date()
                 gameText += "\n   essais : " + game.getGameData_nbTry()
                 gameText += "\n   durée : " + game.getGameDataDuration()
                 gameText += "\n   par : " + game.getGameData_user()
             }
-
+            //Display the text in the layout
             dataText.text = gameText
-            Log.d(query.findAll().toString(), "oui")
         }
+    }
+
+    //When activity stops : stop the realm
+    override fun onStop() {
+        super.onStop()
+        realm?.close()
+
     }
 }
