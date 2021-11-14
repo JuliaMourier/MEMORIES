@@ -3,6 +3,7 @@ package com.example.memories;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -15,7 +16,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,9 +78,16 @@ public class ShowFoldersActivity extends AppCompatActivity {
             ImageButton deleteIcon = new ImageButton(this);
             deleteIcon.setVisibility(View.INVISIBLE);
             deleteButtonList.add(deleteIcon);
-            ImageView folderIcon = new ImageView(this);
+            ImageButton folderIcon = new ImageButton(this);
             TextView folderName = new TextView(this);
-
+            folderIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent ShowImagesFromFolderIntent = new Intent(ShowFoldersActivity.this, ShowImagesFromFolderActivity.class);
+                    ShowImagesFromFolderIntent.putExtra("folderName",folderNameText);
+                    ShowFoldersActivity.this.startActivity(ShowImagesFromFolderIntent);
+                }
+            });
             deleteIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -171,8 +179,16 @@ public class ShowFoldersActivity extends AppCompatActivity {
                     ImageButton deleteIcon = new ImageButton(activity);
                     deleteIcon.setVisibility(View.INVISIBLE);
                     activity.deleteButtonList.add(deleteIcon);
-                    ImageView folderIcon = new ImageView(activity);
+                    ImageButton folderIcon = new ImageButton(activity);
                     TextView folderName = new TextView(activity);
+                    folderIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent ShowImagesFromFolderIntent = new Intent(activity, ShowImagesFromFolderActivity.class);
+                            ShowImagesFromFolderIntent.putExtra("folderName",folderNameText);
+                            activity.startActivity(ShowImagesFromFolderIntent);
+                        }
+                    });
 
                     deleteIcon.setOnClickListener(new View.OnClickListener() {
                         @Override

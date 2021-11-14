@@ -10,13 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Memories">
         <activity
-            android:name=".ShowFoldersActivity"
+            android:name=".ShowImagesFromFolderActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true" />
         <activity
-            android:name=".ShowImagesFromFolderActivity"
+            android:name=".ShowFoldersActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
