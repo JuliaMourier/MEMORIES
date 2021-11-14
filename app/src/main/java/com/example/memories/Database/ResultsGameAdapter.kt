@@ -55,8 +55,8 @@ class ResultsGameAdapter : AppCompatActivity(){
 
         if (query != null) {
             var i = 0
-            try { //get the graphView
-                var graphView : GraphView = findViewById(com.example.memories.R.id.graph)
+            try { //get the graphViews
+                var graphView : GraphView = findViewById(com.example.memories.R.id.graph) //for the number of tries
                 var graphDuration : GraphView = findViewById(com.example.memories.R.id.graph2)
 
                 //Create empty series
@@ -76,7 +76,7 @@ class ResultsGameAdapter : AppCompatActivity(){
                     }
                 }
 
-                //COmplete the graph xith the series filled
+                //Complete the graphs with the series filled
                 graphView.addSeries(series)
                 graphDuration.addSeries(seriesduration)
             } catch (e: IllegalArgumentException) {
