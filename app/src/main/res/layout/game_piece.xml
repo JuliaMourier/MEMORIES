@@ -13,14 +13,17 @@
         android:text="Trouvez les paires"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <GridLayout
-        android:id="@+id/MyDynamicLayout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="20dp"
-        android:alignmentMode="alignMargins"
-        android:columnCount="4">
+        android:layout_height="wrap_content">
+        <GridLayout
+            android:id="@+id/MyDynamicLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="4"
+            android:layout_gravity="center">
 
-    </GridLayout>
+        </GridLayout>
+    </FrameLayout>
+
 </LinearLayout>

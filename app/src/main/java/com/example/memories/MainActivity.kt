@@ -4,6 +4,7 @@ import android.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.View
 import com.example.memories.R
 import android.view.ViewGroup
@@ -14,15 +15,33 @@ class MainActivity : AppCompatActivity() {
     private var gamePiece: GridLayout? = null
     private var nbImg: Int? = null
 
+    var density = 0f
+    var dpHeight:kotlin.Float = 0f
+    var dpWidth:kotlin.Float = 0f
+    var columnCount:Int = 0
+    var folderIconPxSize:Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.game_piece)
         gamePiece = findViewById<View>(R.id.MyDynamicLayout) as GridLayout
+        val display = windowManager.defaultDisplay
+        val outMetrics = DisplayMetrics()
+        display.getMetrics(outMetrics)
 
-        nbImg = 4
+        density = resources.displayMetrics.density
+        dpHeight = outMetrics.heightPixels / density
+        dpWidth = outMetrics.widthPixels / density
+        columnCount = 5
 
-        val images: MutableList<Int> = mutableListOf(plus, minus, plus, minus)
+        folderIconPxSize = (outMetrics.widthPixels / columnCount) as Int
+        val paramsFrameLayout: ViewGroup.LayoutParams =
+            ActionBar.LayoutParams(folderIconPxSize, folderIconPxSize)
+
+        nbImg = 8
+
+        val images: MutableList<Int> = mutableListOf(chat, chien, famille1, famille2,chat, chien, famille1, famille2)
 
         var buttonsArray = arrayOf<Button>()
 
@@ -30,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         for (i in 0 until nbImg!!) {
             val btn_img = Button(this)
-            val params: ViewGroup.LayoutParams = ActionBar.LayoutParams(100,100)
+            val params: ViewGroup.LayoutParams = ActionBar.LayoutParams(paramsFrameLayout)
             btn_img.layoutParams=params
             btn_img.setBackgroundResource(questionpoint)
 
