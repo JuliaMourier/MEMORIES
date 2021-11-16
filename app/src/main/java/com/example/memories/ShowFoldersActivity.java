@@ -1,13 +1,18 @@
 package com.example.memories;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -18,10 +23,15 @@ import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -39,10 +49,17 @@ public class ShowFoldersActivity extends AppCompatActivity {
     ArrayList<String> foldersNameList=new ArrayList<String>();
     AlertDialog.Builder builder, builder1;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<ImageButton>();
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+    private int STORAGE_PERMISSION_CODE = 1;
+    private static final String SHARED_PREF_USER_INFO = "folderNames";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_folders);
+        preferences = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE);
+        editor = preferences.edit();
+
         this.loadFoldersNameFromStorage();
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics ();
@@ -157,7 +174,15 @@ public class ShowFoldersActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.addFolder();
+                if (ContextCompat.checkSelfPermission(ShowFoldersActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(ShowFoldersActivity.this, "You have already granted this permission!",
+                            Toast.LENGTH_SHORT).show();
+                    activity.addFolder();
+                } else {
+                    requestStoragePermission();
+                }
+
 
             }
         });
@@ -294,6 +319,14 @@ public class ShowFoldersActivity extends AppCompatActivity {
             }
         }
     }
+    protected void saveFoldersNameOnStorage2(){
+        int n = foldersNameList.size();
+        for(int i=0;i<n;i++){
+            editor.putString(Integer.toString(i),foldersNameList.get(i).toString());
+
+        }
+        editor.commit();
+    }
     protected void loadFoldersNameFromStorage() {
         FileInputStream fis = null;
         try {
@@ -319,6 +352,18 @@ public class ShowFoldersActivity extends AppCompatActivity {
             }
         }
     }
+    protected void loadFoldersNameFromStorage2(){
+        String uriText="a";
+        int i = 0;
+        while(uriText!=null){
+            uriText = preferences.getString(Integer.toString(i),null);
+            if(uriText!=null){
+                foldersNameList.add(uriText);
+                i++;
+            }
+        }
+
+    }
     public void setAllDeleteButtonsVisible(){
         int n = deleteButtonList.size();
         for (int i=0;i<n;i++){
@@ -331,5 +376,43 @@ public class ShowFoldersActivity extends AppCompatActivity {
             deleteButtonList.get(i).setVisibility(View.INVISIBLE);
         }
     }
+    private void requestStoragePermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed because of this and that")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(ShowFoldersActivity.this,
+                                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                        }
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission GRANTED", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

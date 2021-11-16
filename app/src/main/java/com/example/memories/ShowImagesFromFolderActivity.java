@@ -7,8 +7,10 @@ import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
@@ -40,11 +42,19 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     float density, dpHeight, dpWidth;
     int rowCount, columnCount, imageIconPxSize;
     private static final int PICK_IMAGE = 100;
+    private static final int LOAD_IMAGE = 99;
+
     public ArrayList<Uri> imageList = new ArrayList<Uri>();
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         folderName = this.getIntent().getStringExtra("folderName");
+
+        preferences = getSharedPreferences(folderName, MODE_PRIVATE);
+        editor = preferences.edit();
         setContentView(R.layout.activity_show_images_from_folder);
 
         folderNameTextView = findViewById(R.id.folder_name);
@@ -77,6 +87,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     }
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+
         startActivityForResult(gallery, PICK_IMAGE);
     }
     @Override
@@ -90,7 +101,8 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     public void initGallery(){
         int n = imageList.size();
         for(int i=0;i<n;i++){
-            this.addImagetoGrid(imageList.get(i),false);
+            Uri imageUri = imageList.get(i);
+            this.addImagetoGrid(imageUri,false);
         }
     }
     public void addImagetoGrid(Uri imageUri, boolean saveOnStorage){
@@ -112,60 +124,25 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         }
 
     }
-    public String textInFileImagePath()  {
-        String pathList = "";
+    public void saveImagesOnStorage(){
         int n = imageList.size();
         for(int i=0;i<n;i++){
-            pathList+=imageList.get(i).getPath()+"\n";
+            editor.putString(Integer.toString(i),imageList.get(i).toString());
         }
-        return pathList;
-    }
-    public void saveImagesOnStorage(){
-        String text = this.textInFileImagePath();
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(folderName+".txt", MODE_PRIVATE);
-            fos.write(text.getBytes());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        editor.apply();
     }
     public void loadImagesFromStorage(){
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(folderName+".txt");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
-            while ((text = br.readLine()) != null) {
-                imageList.add(Uri.fromFile(new File(text)));
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        String uriText="a";
+        int i = 0;
+        while(uriText!=null){
+            uriText = preferences.getString(Integer.toString(i),null);
+            if(uriText!=null){
+                imageList.add(Uri.parse(uriText));
+                i++;
             }
         }
     }
+
 
 
 
