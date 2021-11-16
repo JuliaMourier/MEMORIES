@@ -9,6 +9,7 @@ import com.example.memories.Database.ResultsGameAdapter
 import com.example.memories.R
 
 class MenuActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mainmenu)

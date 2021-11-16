@@ -10,19 +10,17 @@
         android:layout_height="wrap_content"
         android:layout_row="0"
         android:layout_column="0"
-        android:text="Trouvez les paires"
         android:gravity="center"
+        android:text="Trouvez les paires"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="4dp">
+        android:layout_height="match_parent">
         <GridLayout
             android:id="@+id/MyDynamicLayout"
-            android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:columnCount="2"
+            android:columnCount="6"
             android:layout_gravity="center">
 
 
