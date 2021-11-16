@@ -117,6 +117,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
                                     foldersNameList.remove(folderNameText);
                                     ShowFoldersActivity.this.saveFoldersNameOnStorage();
                                     ShowFoldersActivity.this.setAllDeleteButtonsInvisible();
+                                    File file = new File(ShowFoldersActivity.this.getFilesDir().getParent() + File.separator + "shared_prefs"+"/"+folderNameText+".xml");
+                                    file.delete();
                                 }
                             })
                             .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -176,8 +178,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (ContextCompat.checkSelfPermission(ShowFoldersActivity.this,
                         Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(ShowFoldersActivity.this, "You have already granted this permission!",
-                            Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ShowFoldersActivity.this, "You have already granted this permission!",
+                      //      Toast.LENGTH_SHORT).show();
                     activity.addFolder();
                 } else {
                     requestStoragePermission();
@@ -225,6 +227,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
                                         public void onClick(DialogInterface dialogInterface, int i) {
                                             foldersGridLayout.removeView(cellFolderIcon);
                                             foldersNameList.remove(folderNameText);
+                                            File file = new File(ShowFoldersActivity.this.getFilesDir().getParent() + File.separator + "shared_prefs"+"/"+folderNameText+".xml");
+                                            file.delete();
                                             ShowFoldersActivity.this.saveFoldersNameOnStorage();
                                             ShowFoldersActivity.this.setAllDeleteButtonsInvisible();
                                         }
@@ -381,8 +385,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
             new AlertDialog.Builder(this)
-                    .setTitle("Permission needed")
-                    .setMessage("This permission is needed because of this and that")
+                    .setTitle("Permission demandée")
+                    .setMessage("La permission suivante est demandée afin d'accéder à la gallerie photo du téléphone, permettant dans le cas échéant d'ajouter du contenu n'importe quelle carte au jeu ")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -390,7 +394,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
                                     new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
                         }
                     })
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("annuler", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -409,9 +413,9 @@ public class ShowFoldersActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permission GRANTED", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Permission GRANTED", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
     }
