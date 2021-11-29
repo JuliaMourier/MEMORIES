@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import com.example.memories.Database.GetFirebaseDataActivity
 import com.example.memories.Database.ResultsGameAdapter
 import com.example.memories.R
 
@@ -29,7 +30,7 @@ class MenuActivity : AppCompatActivity() {
         })
 
         resultsButton.setOnClickListener(View.OnClickListener { view ->
-            var intent : Intent = Intent(this, ResultsGameAdapter::class.java)
+            var intent : Intent = Intent(this, GetFirebaseDataActivity::class.java)
             startActivity(intent)
         })
     }

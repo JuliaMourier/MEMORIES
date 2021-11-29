@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "9784578867",
+    "project_id": "memories-8cc20",
+    "storage_bucket": "memories-8cc20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9784578867:android:3819fea9904411bb4fe446",
+        "android_client_info": {
+          "package_name": "com.example.memories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9784578867-friuvas0jqpqcur0meqbtmd5l5pu4lpe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.memories",
+            "certificate_hash": "4a5b0cea5fb086221eaec76c7d96424bd7a390c0"
+          }
+        },
+        {
+          "client_id": "9784578867-r8bq5kpfpji06v01eeo0hqks9nrsuovj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACvDmiRpfGGgINBEc-eDCM3kyVPEQ44x0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9784578867-r8bq5kpfpji06v01eeo0hqks9nrsuovj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

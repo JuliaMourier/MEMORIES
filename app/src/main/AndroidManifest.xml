@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +26,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Database.ResultsGameAdapter"
+            android:name=".Database.GetFirebaseDataActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Database.FirebaseActivity"
             android:exported="true" />
         <activity
             android:name=".Database.DatabaseActivity"

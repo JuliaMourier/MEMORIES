@@ -20,14 +20,16 @@ import io.realm.RealmConfiguration
 import io.realm.kotlin.where
 import io.realm.mongodb.App
 import io.realm.mongodb.AppConfiguration
+import io.realm.mongodb.User
 import io.realm.mongodb.mongo.MongoClient
+import io.realm.mongodb.sync.SyncConfiguration
 import java.text.SimpleDateFormat
 import java.util.*
 /*
 lateinit var taskApp: App
 inline fun <reified T> T.TAG(): String = T::class.java.simpleName
-const val MONGODB_REALM_APP_ID = "memories-0-nfpqj"*/
-
+const val MONGODB_REALM_APP_ID = "memories-0-nfpqj"
+*/
 
 //Activity for the database
 class DatabaseActivity : AppCompatActivity() {
@@ -40,28 +42,49 @@ class DatabaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Realm.init(this);//Initialisation to the realm
+        //Set the view to the get the data by hand (Temporary)
+        setContentView(R.layout.idtest)
+
+        //Text view xhere to display the unique id
+        val idtext: TextView = findViewById(R.id.idText)
+        //Get the unique ID of the user's phone & display it
+        val android_id: String =
+            Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        idtext.text = android_id.toUpperCase()
+
+
+        Log.d("onCreate ", "oui")
 
         /*taskApp = App(
             AppConfiguration.Builder(MONGODB_REALM_APP_ID)
                 .defaultSyncErrorHandler { session, error ->
                     Log.e(TAG(), "Sync error: ${error.errorMessage}")
                 }
-                .build())*/
+                .build())
+        Log.d(taskApp.currentUser().toString() + "Taskapp", "oui")*/
 
         //COnfiguration : name of the new data base
         var config : RealmConfiguration = RealmConfiguration.Builder().name("RealmDate.realm").deleteRealmIfMigrationNeeded().build() //.deleteRealmIfMigrationNeeded()
         Realm.setDefaultConfiguration(config)
 
-        //Set the view to the get the data by hand (Temporary)
-        setContentView(R.layout.idtest)
+        //val config = SyncConfiguration.Builder(android_id, "PARTITION")
+            //.build()
+        //Log.d(config.toString() + " config", "oui")
 
-        //Text view xhere to display the unique id
-        val idtext: TextView = findViewById(R.id.idText)
+        // Sync all realm changes via a new instance, and when that instance has been successfully created connect it to an on-screen list (a recycler view)
+        /*Realm.getInstanceAsync(config, object: Realm.Callback() {
+            override fun onSuccess(realm: Realm) {
+                // since this realm should live exactly as long as this activity, assign the realm to a member variable
+                this@DatabaseActivity.realm = realm
+                recoverData()
+            }
 
-        //Get the unique ID of the user's phone & display it
-        val android_id: String =
-            Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        idtext.text = android_id.toUpperCase()
+            override fun onError(exception: Throwable) {
+                super.onError(exception)
+                Log.d("Oops an error occured", "oui")
+            }
+        })*/
+
 
         //text view to get manually the number of try and the duration for the game (temporary)
         numberOfTry = findViewById(R.id.numberOfTry)
@@ -101,7 +124,9 @@ class DatabaseActivity : AppCompatActivity() {
             game.setGameData_date(dateAndTime)
             game.setGameData_nbTry(numberOfTry?.text.toString())
             game.setGameData_duration(duration?.text.toString())
-
+            /*realm?.executeTransactionAsync { realm ->
+                realm.insert(game)
+            }*/
         }, {
             //If the operation is a success :
             Toast.makeText(this,"Operation Succeeded",Toast.LENGTH_LONG)// Transaction was a success
@@ -109,7 +134,7 @@ class DatabaseActivity : AppCompatActivity() {
             recoverData()
         }, { error ->
             // Transaction failed and was automatically canceled
-            Log.d("a probem occured", "oui")
+            Log.d("a problem occured", "oui")
             Log.d(error.message, "oui");
 
             Toast.makeText(this, "Operation Failed",Toast.LENGTH_LONG)
@@ -140,6 +165,17 @@ class DatabaseActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         realm?.close()
+    }
 
+
+//  When activity destroys : stop the realm
+    override fun onDestroy() {
+        super.onDestroy()
+        // if a user hasn't logged out when the activity exits, still need to explicitly close the realm
+        realm?.close()
+    }
+
+    fun saveData(userId: String, nbTries : String, dateAndTime : String){
+        //TODO static fun
     }
 }

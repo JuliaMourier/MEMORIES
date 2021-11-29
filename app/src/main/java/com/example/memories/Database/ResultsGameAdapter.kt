@@ -42,7 +42,8 @@ class ResultsGameAdapter : AppCompatActivity(){
         //Set the onclick listener to get back to the activity xhere to add data
         var addButton: Button = findViewById(com.example.memories.R.id.addbutton)
         addButton.setOnClickListener(View.OnClickListener { view ->
-            var intent : Intent = Intent(this, DatabaseActivity::class.java)
+            var intent : Intent = Intent(this, FirebaseActivity
+            ::class.java)
             startActivity(intent)
         })
     }
