@@ -20,7 +20,7 @@ class MenuActivity : AppCompatActivity() {
         var resultsButton : Button = findViewById(R.id.main_menu_result_b)
 
         playButton.setOnClickListener(View.OnClickListener { view ->
-            var intent : Intent = Intent(this, MainActivity::class.java)
+            var intent : Intent = Intent(this, NumberCardActivity::class.java)
             startActivity(intent)
         })
 
