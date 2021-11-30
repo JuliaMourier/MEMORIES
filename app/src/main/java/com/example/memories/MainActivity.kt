@@ -12,10 +12,13 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.marginLeft
 import com.example.memories.R.drawable.*
+import java.util.LinkedList
+
+
+
 
 class MainActivity : AppCompatActivity() {
     private var gamePiece: GridLayout? = null
-    private var nbImg: Int? = null
 
     var density = 0f
     var dpHeight:kotlin.Float = 0f
@@ -41,6 +44,9 @@ class MainActivity : AppCompatActivity() {
         val display = windowManager.defaultDisplay
         val outMetrics = DisplayMetrics()
         display.getMetrics(outMetrics)
+        val nbCards = intent.getSerializableExtra("nbCards") as Int?
+
+
 
         density = resources.displayMetrics.density
         dpHeight = outMetrics.heightPixels / density
@@ -51,14 +57,13 @@ class MainActivity : AppCompatActivity() {
         val paramsFrameLayout: ViewGroup.LayoutParams =
             ActionBar.LayoutParams(cardSize, cardSize)
 
-        nbImg = 8
 
         var cardBack = questionpoint
 
 
         images.shuffle()
 
-        for (i in 0 until nbImg!!) {
+        for (i in 0 until nbCards!!) {
             val btn_img = Button(this)
             val params: ViewGroup.LayoutParams = ActionBar.LayoutParams(paramsFrameLayout)
             btn_img.layoutParams=params
@@ -72,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        for (i in 0 until nbImg!!){
+        for (i in 0 until nbCards!!){
             buttonsArray[i].setBackgroundResource(cardBack)
             buttonsArray[i].text = "cardBack"
             buttonsArray[i].textSize = 0.0F
