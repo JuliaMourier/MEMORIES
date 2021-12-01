@@ -1,47 +1,32 @@
 package com.example.memories;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.content.CursorLoader;
-
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 
 public class ShowImagesFromFolderActivity extends AppCompatActivity {
     String folderName;
     TextView folderNameTextView;
-    ImageButton addButton, deleteButton;
+    ImageButton addButton, deleteButton, infoButton;
     GridLayout foldersGridLayout;
     float density, dpHeight, dpWidth;
     int rowCount, columnCount, imageIconPxSize;
@@ -52,6 +37,9 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<>();
+    ArrayList<ImageButton> infoButtonList = new ArrayList<>();
+    boolean deleteButtonVisible = false;
+    boolean infoButtonVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +53,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         folderNameTextView = findViewById(R.id.folder_name);
         addButton = findViewById(R.id.add_button);
         deleteButton = findViewById(R.id.delete_button);
+        infoButton = findViewById(R.id.info_button);
         foldersGridLayout = findViewById(R.id.folder_grid);
 
         folderNameTextView.setText(folderName);
@@ -89,12 +78,15 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ShowImagesFromFolderActivity.this.setAllDeleteButtonVisible();
+                ShowImagesFromFolderActivity.this.setAllDeleteButtonVisibility(!deleteButtonVisible);
             }
         });
-
-
-
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShowImagesFromFolderActivity.this.setAllInfoButtonVisibility(!infoButtonVisible);
+            }
+        });
     }
     private void openGallery() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
@@ -121,24 +113,73 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
 
         ImageView imageView = new ImageView(activity);
         imageView.setImageURI(imageUri);
+        ImageButton infoImageButton = new ImageButton(this);
         ImageButton deleteImageButton = new ImageButton(this);
+
+        infoButtonList.add(infoImageButton);
         deleteButtonList.add(deleteImageButton);
+
+        infoImageButton.setVisibility(View.INVISIBLE);
         deleteImageButton.setVisibility(View.INVISIBLE);
         deleteImageButton.setBackgroundResource(R.drawable.minus);
+        infoImageButton.setBackgroundResource(R.drawable.info);
         FrameLayout imageFrameLayout = new FrameLayout(activity);
         FrameLayout.LayoutParams paramsFrame = new FrameLayout.LayoutParams(activity.imageIconPxSize, activity.imageIconPxSize);
         FrameLayout.LayoutParams paramsDelete = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.2),(int)(activity.imageIconPxSize*0.2));
+        FrameLayout.LayoutParams paramsInfo = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.2),(int)(activity.imageIconPxSize*0.2));
         FrameLayout.LayoutParams paramsImage = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.8),(int)(activity.imageIconPxSize*0.8));
         paramsDelete.gravity = Gravity.TOP|Gravity.RIGHT;
+        paramsInfo.gravity = Gravity.TOP|Gravity.LEFT;
+        paramsImage.gravity = Gravity.CENTER_HORIZONTAL;
 
+        infoImageButton.setLayoutParams(paramsInfo);
         imageFrameLayout.setLayoutParams(paramsFrame);
         deleteImageButton.setLayoutParams(paramsDelete);
         imageView.setLayoutParams(paramsImage);
 
+        imageFrameLayout.addView(infoImageButton);
         imageFrameLayout.addView(deleteImageButton);
         imageFrameLayout.addView(imageView);
 
         activity.foldersGridLayout.addView(imageFrameLayout);
+        infoImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowImagesFromFolderActivity.this);
+                String defaultText = preferences.getString(Integer.toString(imageId)+"_comment",null);
+                EditText commentEditText = new EditText(ShowImagesFromFolderActivity.this);
+                commentEditText.setGravity(Gravity.START);
+                commentEditText.setMaxLines(10);
+                commentEditText.setMinLines(10);
+                if(defaultText!=null){
+                    commentEditText.setText(defaultText);
+                }
+                builder.setView(commentEditText)
+                        .setCancelable(false)
+                        .setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String commentText = commentEditText.getText().toString();
+                                if(!commentText.equals("")){
+                                    editor.putString(Integer.toString(imageId)+"_comment",commentText);
+                                    editor.apply();
+                                }
+
+                            }
+                        })
+                        .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                ShowImagesFromFolderActivity.this.setAllDeleteButtonVisibility(false);
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                //Setting the title manually
+                alert.setTitle("Modifier la description");
+                alert.getWindow().getAttributes().windowAnimations=R.style.MyDialogAnimation;
+                alert.show();
+            }
+        });
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,13 +192,14 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
                                 ShowImagesFromFolderActivity.this.foldersGridLayout.removeView(imageFrameLayout);
                                 imageList.remove(imageUri);
                                 editor.remove(Integer.toString(imageId));
+                                editor.remove(Integer.toString(imageId)+"_comment");
                                 editor.apply();
                             }
                         })
                         .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
-                                ShowImagesFromFolderActivity.this.setAllDeleteButtonInvisible();
+                                ShowImagesFromFolderActivity.this.setAllDeleteButtonVisibility(false);
                             }
                         });
                 AlertDialog alert = builder.create();
@@ -177,6 +219,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         int n = imageList.size();
         for(int i=0;i<n;i++){
             editor.putString(Integer.toString(i),imageList.get(i).toString());
+
         }
         editor.apply();
     }
@@ -191,17 +234,29 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             }
         }
     }
-    public void setAllDeleteButtonInvisible(){
+    public void setAllDeleteButtonVisibility(boolean visibilityBool){
         int n = deleteButtonList.size();
+        int visibility;
+        if(visibilityBool)
+            visibility = View.VISIBLE;
+        else
+            visibility = View.INVISIBLE;
         for(int i=0;i<n;i++){
-            deleteButtonList.get(i).setVisibility(View.INVISIBLE);
+            deleteButtonList.get(i).setVisibility(visibility);
         }
+        deleteButtonVisible = visibilityBool;
     }
-    public void setAllDeleteButtonVisible(){
-        int n = deleteButtonList.size();
+    public void setAllInfoButtonVisibility(boolean visibilityBool){
+        int n = infoButtonList.size();
+        int visibility;
+        if(visibilityBool)
+            visibility = View.VISIBLE;
+        else
+            visibility = View.INVISIBLE;
         for(int i=0;i<n;i++){
-            deleteButtonList.get(i).setVisibility(View.VISIBLE);
+            infoButtonList.get(i).setVisibility(visibility);
         }
+        infoButtonVisible = visibilityBool;
     }
 
 
