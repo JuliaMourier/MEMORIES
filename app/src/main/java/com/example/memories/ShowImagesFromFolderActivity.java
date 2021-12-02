@@ -4,6 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ShowImagesFromFolderActivity extends AppCompatActivity {
@@ -112,7 +116,16 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
 
         ImageView imageView = new ImageView(activity);
-        imageView.setImageURI(imageUri);
+        Bitmap imageDefaultBitmap;
+        Bitmap imageScaledBitmap;
+        try {
+            imageDefaultBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            imageScaledBitmap = Bitmap.createScaledBitmap(imageDefaultBitmap,(int)(activity.imageIconPxSize*0.8) , (int)(activity.imageIconPxSize*0.8), true);
+            imageView.setImageBitmap(imageScaledBitmap);
+        } catch (IOException e) {
+            e.printStackTrace();
+            imageView.setImageURI(imageUri);
+        }
         ImageButton infoImageButton = new ImageButton(this);
         ImageButton deleteImageButton = new ImageButton(this);
 
@@ -137,9 +150,10 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         deleteImageButton.setLayoutParams(paramsDelete);
         imageView.setLayoutParams(paramsImage);
 
+        imageFrameLayout.addView(imageView);
         imageFrameLayout.addView(infoImageButton);
         imageFrameLayout.addView(deleteImageButton);
-        imageFrameLayout.addView(imageView);
+
 
         activity.foldersGridLayout.addView(imageFrameLayout);
         infoImageButton.setOnClickListener(new View.OnClickListener() {
