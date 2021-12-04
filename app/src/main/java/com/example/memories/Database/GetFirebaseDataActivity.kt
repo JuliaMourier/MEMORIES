@@ -8,6 +8,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.memories.NumberCardActivity
+import com.example.memories.QRCode.QRCodeScanner
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.jjoe64.graphview.GraphView
@@ -39,43 +41,44 @@ class GetFirebaseDataActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //userId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
+        // Get data from SharedPreferences
+        val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+        if(!sharedPreferences.contains("userID")){
+            Toast.makeText(this, "Vous devez scanner le code du téléphone dont vous voulez récupérer les résultats", Toast.LENGTH_LONG).show()
+            //Send to scan QRCODE activity :
+            var intent : Intent = Intent(this, QRCodeScanner::class.java)
+            startActivity(intent)
+        }
         //set content to see graph of results
         setContentView(com.example.memories.R.layout.games_results)
-        userId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
-
+        userId = sharedPreferences.getString("userID","").toString()
+        Log.d("userid :", userId)
+        Toast.makeText(this, userId,
+            Toast.LENGTH_LONG).show()
         recoverListOfGames(userId)
 
-
-        //Set the onclick listener to get back to the activity xhere to add data
-        var addButton: Button = findViewById(com.example.memories.R.id.addbutton)
-        addButton.setOnClickListener(View.OnClickListener { view ->
-            var intent: Intent = Intent(
-                this, FirebaseActivity
-                ::class.java
-            )
-            startActivity(intent)
-        })
     }
 
     fun recoverListOfGames(user : String){
         database.child("users").child(userId).child("games").get().addOnSuccessListener {
-            Log.i("firebase", "Got value ${it.childrenCount}")
-            Log.d(it.children.toString(), "firebase ouiiii")
-            var go: GameObject = GameObject()
+
             for (gameData in it.children) {
+                var go: GameObject = GameObject()
+
                 for (info in gameData.children) {
-                    if (info.key == "date") {
+                    if (info.key == "date") { //get the date
                         go.setMDate(info.value.toString())
                     }
-                    if (info.key == "nbOfTries") {
+                    if (info.key == "nbOfTries") { //Get the number of tries
                         go.setMNbTry(info.value.toString())
                     }
-                    if (info.key == "duration") {
+                    if (info.key == "duration") { //Get duration
                         go.setMDuration(info.value.toString())
                     }
-                    Log.d(info.toString(), "firebase children of children")
                 }
-                gamesList.add(go)
+                gamesList.add(go) //Add the game to the list
 
             }
             //show the graph of results
@@ -98,27 +101,29 @@ class GetFirebaseDataActivity : AppCompatActivity() {
             val series: LineGraphSeries<DataPoint> = LineGraphSeries()
             val seriesduration: LineGraphSeries<DataPoint> = LineGraphSeries()
             var i = 0
-            Log.d(gamesList.size.toString(), "firebase size")
 
-            for (game in gamesList) { //get through the database*
-                Log.d(game.toString(), "firebase children of children")
+            for (gameItem in gamesList) { //get through the list of games
 
                 //add the data in the graph series
-                if (game.getMNbTry()
-                        .toString() != null && (game.getMDuration() != null)
+                if (gameItem.getMNbTry()
+                        .toString() != null && (gameItem.getMDuration() != null)
                 ) {
+                    //Add the data of the number of try by filling a serie
                     series.appendData(
                         DataPoint(
                             i.toDouble(),
-                            game.getMNbTry().toString().toDouble()
-                        ), true, 100
+                            gameItem.getMNbTry().toString().toDouble()
+                        ), true, 10
                     )
+                    //Add the data of the duration by filling a serie
+
                     seriesduration.appendData(
                         DataPoint(
                             i++.toDouble(),
-                            game.getMDuration().toString().toDouble()
-                        ), true, 100
+                            gameItem.getMDuration().toString().toDouble()
+                        ), true, 10
                     )
+
                 }
             }
 

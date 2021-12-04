@@ -5,6 +5,9 @@
     <string name="photos">PHOTOS</string>
     <string name="howmanycards">Combien de cartes voulez-vous ?</string>
     <string name="validate">VALIDER</string>
-    <string name="baseNumberOfCards">18</string>²
-
+    <string name="baseNumberOfCards">18</string>
+    <string name="see_result">Voir Résultats</string>
+    <string name="scan_me">Scannez-moi</string>
+    <string name="generate_QRcode">Générer QR Code</string>
+    <string name="scan_QRCode">Scanner QR Code</string>
 </resources>

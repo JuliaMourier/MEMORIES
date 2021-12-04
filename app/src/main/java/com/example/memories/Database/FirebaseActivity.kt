@@ -38,13 +38,16 @@ class FirebaseActivity : AppCompatActivity() {
         idtext.text = userID.toUpperCase()
 
         Firebase.initialize(this)
-        writeNewUser(userID, userID)
+        if(database.child("users").child(userID) == null){ //if user do
+            writeNewUser(userID, userID)
+        }
         numberOfTry = findViewById(R.id.numberOfTry)
         duration = findViewById(R.id.timeText)
         var buttonSave : Button = findViewById(R.id.button)
 
         buttonSave.setOnClickListener(View.OnClickListener { view ->
-            writeNewGame(UUID.randomUUID().toString(), userID, dateAndTime, numberOfTry?.text.toString(),duration?.text.toString())
+            var tmpDate : String = dateAndTime.replace("/","-")
+            writeNewGame(tmpDate, userID, dateAndTime, numberOfTry?.text.toString(),duration?.text.toString())
         })
 
         var resultButton: Button = findViewById(R.id.results)
