@@ -1,40 +1,53 @@
 package com.example.memories;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
+
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SelectedImages {
-    public ArrayList<ImageFromStorage> imageList;
-    public static String FILE_NAME = "foldersName.txt";
-    public ArrayList<String> folderNameList = new ArrayList<String>();
-    public void addSelectedImage(ImageFromStorage newImage){
-        imageList.add(newImage);
-    }
+    public ArrayList<ImageFromStorage> imageList = new ArrayList<ImageFromStorage>();
+
+    Context context;
+
+    public SharedPreferences selectedImagesPreferences;
+    public SharedPreferences selectedImagesDescriptionPreferences;
+    public SharedPreferences.Editor selectedImagesEditor;
+    public SharedPreferences.Editor selectedImagesDescriptionEditor;
+
+    Map<String, String> selectedImagesURI;
+    Map<String, String> selectedImagesDescription;
+
     public int getSelectedImagesNumber(){
         return imageList.size();
     }
+    public SelectedImages(Context context){
+        this.context=context;
+        selectedImagesPreferences = context.getSharedPreferences("selectedImages", Context.MODE_PRIVATE);
+        selectedImagesDescriptionPreferences = context.getSharedPreferences("selectedImagesDescription", Context.MODE_PRIVATE);
+        selectedImagesEditor = selectedImagesPreferences.edit();
+        selectedImagesDescriptionEditor = selectedImagesDescriptionPreferences.edit();
 
-    public void loadFolderNames(){
-        try
-        {
-            BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
-            String line;
-            while ((line = reader.readLine()) != null)
-            {
-                folderNameList.add(line);
-            }
-            reader.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        loadSelectedImages();
 
+    }
+    public void loadSelectedImages(){
+        selectedImagesURI = (Map<String, String>) selectedImagesPreferences.getAll();
+        selectedImagesDescription = (Map<String, String>) selectedImagesDescriptionPreferences.getAll();
+        ContentResolver contentResolver = context.getContentResolver();
+        for(String imageId : selectedImagesURI.keySet()){
+            Uri selectedImageUri = Uri.parse(selectedImagesURI.get(imageId));
+            String selectedImageDescription;
+            if(selectedImagesDescription.containsKey(imageId))
+                selectedImageDescription = selectedImagesDescription.get(imageId);
+            else
+                selectedImageDescription = "";
+            ImageFromStorage selectedImage = new ImageFromStorage(selectedImageUri, selectedImageDescription, contentResolver);
+            imageList.add(selectedImage);
+        }
     }
 
 }

@@ -45,8 +45,8 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     private static final int LOAD_IMAGE = 99;
 
     public ArrayList<Uri> imageList = new ArrayList<Uri>();
-    SharedPreferences preferences, selectedImagesPreferences;
-    SharedPreferences.Editor editor, selectedImagesEditor;
+    SharedPreferences preferences, selectedImagesPreferences, selectedImagesDescriptionPreferences;
+    SharedPreferences.Editor editor, selectedImagesEditor, selectedImagesDescriptionEditor;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<>();
     ArrayList<ImageButton> infoButtonList = new ArrayList<>();
     ArrayList<ImageView> selectedImageView = new ArrayList<>();
@@ -66,8 +66,10 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences(folderName, MODE_PRIVATE);
         selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);
+        selectedImagesDescriptionPreferences = getSharedPreferences("selectedImagesDescription", MODE_PRIVATE);
         editor = preferences.edit();
         selectedImagesEditor = selectedImagesPreferences.edit();
+        selectedImagesDescriptionEditor = selectedImagesDescriptionPreferences.edit();
         setContentView(R.layout.activity_show_images_from_folder);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(folderName);
@@ -183,6 +185,11 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
                             editor.apply();
                             selectedImagesEditor.putString(folderName+"_"+Integer.toString(imageId),imageUri.toString());
                             selectedImagesEditor.apply();
+                            String selectedImageDescription = preferences.getString(Integer.toString(imageId)+"_comment",null);
+                            if(selectedImageDescription!=null){
+                                selectedImagesDescriptionEditor.putString(folderName+"_"+Integer.toString(imageId),selectedImageDescription);
+                                selectedImagesDescriptionEditor.apply();
+                            }
                             getCurrentSelectedImagesNumber();
                         }
                         else{
@@ -192,6 +199,11 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
                             editor.apply();
                             selectedImagesEditor.remove(folderName+"_"+Integer.toString(imageId));
                             selectedImagesEditor.apply();
+                            String selectedImageDescription = preferences.getString(Integer.toString(imageId),null);
+                            if(selectedImageDescription!=null){
+                                selectedImagesDescriptionEditor.remove(folderName+"_"+Integer.toString(imageId));
+                                selectedImagesDescriptionEditor.apply();
+                            }
                             getCurrentSelectedImagesNumber();
                         }
                         return false;
