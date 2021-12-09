@@ -113,7 +113,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         DataPoint(
                             i.toDouble(),
                             gameItem.getMNbTry().toString().toDouble()
-                        ), true, 10
+                        ), true, 100
                     )
                     //Add the data of the duration by filling a serie
 
@@ -121,7 +121,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         DataPoint(
                             i++.toDouble(),
                             gameItem.getMDuration().toString().toDouble()
-                        ), true, 10
+                        ), true, 100
                     )
 
                 }
