@@ -139,17 +139,8 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
 
         ImageView imageView = new ImageView(activity);
+        imageView.setImageURI(imageUri);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        Bitmap imageDefaultBitmap;
-        Bitmap imageScaledBitmap;
-        try {
-            imageDefaultBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-            imageScaledBitmap = Bitmap.createScaledBitmap(imageDefaultBitmap,(int)(activity.imageIconPxSize*0.8) , (int)(activity.imageIconPxSize*0.8), true);
-            imageView.setImageBitmap(imageScaledBitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-            imageView.setImageURI(imageUri);
-        }
         ImageButton infoImageButton = new ImageButton(this);
         ImageButton deleteImageButton = new ImageButton(this);
 
@@ -179,7 +170,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if(event.getAction() == MotionEvent.ACTION_DOWN){
-                        if(!selectedImageView.contains(imageView)){
+                        if(!selectedImageView.contains(imageView) & selectedCards<nbCards){
                             imageView.setColorFilter(Color.argb(90, 0, 0, 255));
                             rect = new Rect(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                             selectedImageView.add(imageView);
