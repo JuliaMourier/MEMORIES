@@ -23,8 +23,6 @@ import com.example.memories.QRCode.QRCodeScanner
 import android.content.IntentFilter
 
 
-
-
 class MenuActivity : AppCompatActivity() {
 //A part of this code have been taken from : https://developer.android.com/training/notify-user/build-notification
 
@@ -50,9 +48,6 @@ class MenuActivity : AppCompatActivity() {
             var intent : Intent = Intent(this, ShowFoldersActivity::class.java)
             startActivity(intent)
         })
-
-
-
     }
 
     //Inflate the menu which allow to scan the QRCode
@@ -112,7 +107,5 @@ class MenuActivity : AppCompatActivity() {
             registerReceiver(receiver, it)
         }
     }
-
-
 
 }

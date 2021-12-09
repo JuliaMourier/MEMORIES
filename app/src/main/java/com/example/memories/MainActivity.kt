@@ -123,11 +123,6 @@ class MainActivity : AppCompatActivity() {
         //Launch the Chronometer
         runTimer()
 
-        //TO DELETE
-        var butto : Button = findViewById(R.id.sendb)
-        butto.setOnClickListener(View.OnClickListener { view ->
-            onGameWin()
-        })
 
     }
 
