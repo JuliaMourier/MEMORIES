@@ -54,7 +54,6 @@ class QRCodeScanner : AppCompatActivity() {
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
             runOnUiThread {
-                Toast.makeText(this, "Le QrCode a été correctement lu", Toast.LENGTH_LONG).show()
                 // Storing data into SharedPreferences
                 val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
                 // Creating an Editor object to edit(write to the file)

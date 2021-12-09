@@ -1,16 +1,20 @@
 package com.example.memories
 
 import android.app.ActionBar
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.os.Bundle
+import android.os.Handler
 import android.os.PersistableBundle
+import android.os.SystemClock
 import android.util.DisplayMetrics
 import android.view.View
 import com.example.memories.R
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.marginLeft
+import com.example.memories.Database.FirebaseActivity
 import com.example.memories.R.drawable.*
 import java.util.LinkedList
 
@@ -33,6 +37,11 @@ class MainActivity : AppCompatActivity() {
     var clicked= 0
     var turnOver= false
     var lastClicked= -1
+
+    //Chronometer and nb of tries
+    var nbTries = 0
+    private var seconds = 0 // number of seconds since launched
+    private var running = false//is it running or not?
 
 
 
@@ -96,6 +105,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 if (clicked == 2) {
+                    //2 cards have been turned, add a try to the count of tries
+                    nbTries++
                     turnOver = true
                     if (buttonsArray[i].text == buttonsArray[lastClicked].text) {
                         buttonsArray[i].isClickable = false
@@ -109,7 +120,14 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        //Launch the Chronometer
+        runTimer()
 
+        //TO DELETE
+        var butto : Button = findViewById(R.id.sendb)
+        butto.setOnClickListener(View.OnClickListener { view ->
+            onGameWin()
+        })
 
     }
 
@@ -124,6 +142,9 @@ class MainActivity : AppCompatActivity() {
         savedInstanceState.putInt("clicked", clicked)
         savedInstanceState.putInt("lastClicked", lastClicked)
         savedInstanceState.putBoolean("turnover", turnOver)
+        savedInstanceState.putInt("seconds", seconds)
+        savedInstanceState.putBoolean("running", running)
+        savedInstanceState.putInt("nbTries", nbTries)
         super.onSaveInstanceState(savedInstanceState)
 
     }
@@ -134,7 +155,58 @@ class MainActivity : AppCompatActivity() {
         lastClicked = savedInstanceState.getInt("lastClicked")
         turnOver = savedInstanceState.getBoolean("turnOver")
         buttonsArray = savedInstanceState.getSerializable("buttonsArray") as Array<Button>
+        //Chronometer
+        seconds = savedInstanceState.getInt("seconds")
+        running = savedInstanceState.getBoolean("running")
+        nbTries = savedInstanceState.getInt("nbTries")
+
     }
 
+    // ------------ Chronometer ------------- //
+    override fun onPause() { //if the game pauses, stop the chronometer
+        super.onPause()
+        running = false
+    }
+
+    override fun onResume() { //if the game resume, resume the chronometer
+        super.onResume()
+        running = true
+    }
+
+    private fun runTimer() {
+        //java text view associated with the xml one
+        val handler = Handler()
+        handler.post(object : Runnable {
+            override fun run() {
+
+                val t = SystemClock.elapsedRealtime();
+                if (running) {
+                    seconds++
+                }
+                handler.postDelayed(this, 1000)
+            }
+        })
+    }
+
+
+    private fun restartGame(){
+        //Code here to relaunch a new game
+
+        //Restart the chrono
+        seconds = 0
+        running = true
+    }
+
+    private fun onGameWin(){
+        //Stop Chronometer
+        running = false
+
+        //Add animation of winning
+
+        //Send data to database
+        runOnUiThread {
+            FirebaseActivity().writeNewGameFromGameActivity(this,seconds.toString(), nbTries.toString())
+        }
+    }
 
 }

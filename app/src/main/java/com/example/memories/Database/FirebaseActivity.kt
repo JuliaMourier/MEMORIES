@@ -1,5 +1,6 @@
 package com.example.memories.Database
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -25,23 +26,23 @@ class FirebaseActivity : AppCompatActivity() {
     //val userID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     var duration: TextView? = null //Text view to get the duraction entry
     var numberOfTry: TextView? = null //and the number of try for the game
-    var dateAndTime : String = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) + " " + SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(
+    var dateAndTime : String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date()) + " " + SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(
         Date()
     ); //get the date of the submitting game
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.idtest)
+       /* setContentView(R.layout.idtest)
         userID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
 
         val idtext: TextView = findViewById(R.id.idText)
-        idtext.text = userID.toUpperCase()
+        idtext.text = userID.toUpperCase()*/
 
         Firebase.initialize(this)
         if(database.child("users").child(userID) == null){ //if user do
             writeNewUser(userID, userID)
         }
-        numberOfTry = findViewById(R.id.numberOfTry)
+        /*numberOfTry = findViewById(R.id.numberOfTry)
         duration = findViewById(R.id.timeText)
         var buttonSave : Button = findViewById(R.id.button)
 
@@ -54,7 +55,7 @@ class FirebaseActivity : AppCompatActivity() {
         resultButton.setOnClickListener(View.OnClickListener { view ->
             var intent : Intent = Intent(this, GetFirebaseDataActivity::class.java)
             startActivity(intent)
-        })
+        })*/
 
     }
 
@@ -66,6 +67,24 @@ class FirebaseActivity : AppCompatActivity() {
     fun writeNewGame(gameId: String, userId: String, date: String, duration: String, nbOfTries: String) {
         val game = Game(date, duration, nbOfTries)
         database.child("users").child(userId).child("games").child(gameId).setValue(game)
+    }
+
+    fun writeNewGame(userId: String, date: String, duration: String, nbOfTries: String) {
+        val game = Game(date, duration, nbOfTries)
+        database.child("users").child(userId).child("games").child(date).setValue(game)
+    }
+
+    fun writeNewGameFromGameActivity(context: Context, duration: String, nbOfTries: String){
+        var db = Firebase.database.reference
+        Firebase.initialize(context)
+
+        val userId : String = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
+        if(database.child("users").child(userId) == null){ //if user do exists
+            writeNewUser(userId, userId)
+        }
+        val date : String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date()) + " " + SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date()); //get the date of the submitting game
+        val game = Game(date, duration, nbOfTries)
+        db.child("users").child(userId).child("games").child(date).setValue(game)
     }
 
 }

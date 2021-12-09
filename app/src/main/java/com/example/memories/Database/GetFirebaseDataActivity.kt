@@ -54,9 +54,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         //set content to see graph of results
         setContentView(com.example.memories.R.layout.games_results)
         userId = sharedPreferences.getString("userID","").toString()
-        Log.d("userid :", userId)
-        Toast.makeText(this, userId,
-            Toast.LENGTH_LONG).show()
+
         recoverListOfGames(userId)
 
     }
