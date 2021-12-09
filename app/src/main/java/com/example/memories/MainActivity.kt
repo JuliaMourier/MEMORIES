@@ -2,6 +2,8 @@ package com.example.memories
 
 import android.app.ActionBar
 import android.content.Intent
+import android.graphics.Color
+import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.os.Handler
 import android.os.PersistableBundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import com.example.memories.R
 import android.view.ViewGroup
@@ -16,6 +19,10 @@ import android.widget.*
 import androidx.core.view.marginLeft
 import com.example.memories.Database.FirebaseActivity
 import com.example.memories.R.drawable.*
+import nl.dionsegijn.konfetti.KonfettiView
+import nl.dionsegijn.konfetti.models.Shape
+import nl.dionsegijn.konfetti.models.Size
+import org.w3c.dom.Text
 import java.util.LinkedList
 
 
@@ -43,6 +50,12 @@ class MainActivity : AppCompatActivity() {
     private var seconds = 0 // number of seconds since launched
     private var running = false//is it running or not?
 
+    //Value to verify win
+    private var goodPairs = 0
+    private var countOfCards = 0
+
+    //Sound effect
+    lateinit var mp : MediaPlayer
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +67,10 @@ class MainActivity : AppCompatActivity() {
         val outMetrics = DisplayMetrics()
         display.getMetrics(outMetrics)
         val nbCards = intent.getSerializableExtra("nbCards") as Int?
+        countOfCards = nbCards!!
 
-
-
+        //Media player
+        mp = MediaPlayer.create(this, R.raw.winsound)
         density = resources.displayMetrics.density
         dpHeight = outMetrics.heightPixels / density
         dpWidth = outMetrics.widthPixels / density
@@ -109,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                     nbTries++
                     turnOver = true
                     if (buttonsArray[i].text == buttonsArray[lastClicked].text) {
+                        goodPairs++
                         buttonsArray[i].isClickable = false
                         buttonsArray[lastClicked].isClickable = false
                         turnOver = false
@@ -116,6 +131,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else if (clicked == 0) {
                     turnOver = false
+                }
+
+                if(2*goodPairs == nbCards){
+                    onGameWin()
                 }
             }
 
@@ -186,17 +205,33 @@ class MainActivity : AppCompatActivity() {
 
     private fun restartGame(){
         //Code here to relaunch a new game
-
+        val text = findViewById<TextView>(R.id.findPairsText)
+        text.text = "Trouvez les pairs"
+        goodPairs = 0
         //Restart the chrono
         seconds = 0
         running = true
     }
 
     private fun onGameWin(){
+        val text = findViewById<TextView>(R.id.findPairsText)
+        text.text = "Bravo !!!"
+        mp.start()
         //Stop Chronometer
         running = false
 
         //Add animation of winning
+        val viewKonfetti = findViewById<KonfettiView>(R.id.viewKonfetti)
+        viewKonfetti.build()
+            .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.RED, Color.BLUE)
+            .setDirection(0.0, 359.0)
+            .setSpeed(1f, 5f)
+            .setFadeOutEnabled(true)
+            .setTimeToLive(2000L)
+            .addShapes(Shape.Square, Shape.Circle)
+            .addSizes(Size(12))
+            .setPosition(-50f, viewKonfetti.width + 50f, -50f, -50f)
+            .streamFor(300, 5000L)
 
         //Send data to database
         runOnUiThread {
