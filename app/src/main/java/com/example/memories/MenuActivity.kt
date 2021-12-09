@@ -1,6 +1,12 @@
 package com.example.memories
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -8,15 +14,27 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.example.memories.Database.GetFirebaseDataActivity
 import com.example.memories.QRCode.QRCodeEncoder
 import com.example.memories.QRCode.QRCodeScanner
+import android.content.IntentFilter
+
+
+
 
 class MenuActivity : AppCompatActivity() {
+//A part of this code have been taken from : https://developer.android.com/training/notify-user/build-notification
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mainmenu)
+
+        //Notifications
+        createNotificationChannel()
+        declareReceiver()
 
         var playButton : Button = findViewById(R.id.main_menu_play_b)
         var photosButton : Button = findViewById(R.id.main_menu_photos_b)
@@ -32,6 +50,8 @@ class MenuActivity : AppCompatActivity() {
             var intent : Intent = Intent(this, ShowFoldersActivity::class.java)
             startActivity(intent)
         })
+
+
 
     }
 
@@ -67,6 +87,32 @@ class MenuActivity : AppCompatActivity() {
 
         return super.onOptionsItemSelected(item)
     }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "Notif Channel"
+            val descriptionText = "Channel use for notifications"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("NOTIFICATION_REMINDER_TO_PLAY", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+
+    fun declareReceiver(){
+        IntentFilter(Intent.ACTION_SCREEN_ON).also {
+            var receiver = RebootBroadcastReceiver()
+            registerReceiver(receiver, it)
+        }
+    }
+
 
 
 }

@@ -16,6 +16,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Memories">
+        <receiver android:name=".RebootBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.AIRPLANE_MODE"></action>
+                <action android:name="com.example.memories.REMINDER_NOTIF"></action>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".QRCode.QRCodeScanner"
             android:exported="true" />
@@ -28,8 +35,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".MenuActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -51,6 +58,7 @@
         <activity
             android:name=".ShowImagesFromFolderActivity"
             android:exported="true" />
+
     </application>
 
 </manifest>
