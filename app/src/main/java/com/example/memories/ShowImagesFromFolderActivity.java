@@ -51,6 +51,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     ArrayList<ImageButton> infoButtonList = new ArrayList<>();
     ArrayList<ImageView> selectedImageView = new ArrayList<>();
     ArrayList<Integer> selectedImageID = new ArrayList<>();
+
     boolean deleteButtonVisible = false;
     boolean infoButtonVisible = false;
     boolean selectionMode;
@@ -138,6 +139,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
 
         ImageView imageView = new ImageView(activity);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Bitmap imageDefaultBitmap;
         Bitmap imageScaledBitmap;
         try {
@@ -162,7 +164,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         FrameLayout.LayoutParams paramsFrame = new FrameLayout.LayoutParams(activity.imageIconPxSize, activity.imageIconPxSize);
         FrameLayout.LayoutParams paramsDelete = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.2),(int)(activity.imageIconPxSize*0.2));
         FrameLayout.LayoutParams paramsInfo = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.2),(int)(activity.imageIconPxSize*0.2));
-        FrameLayout.LayoutParams paramsImage = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.8),(int)(activity.imageIconPxSize*0.8));
+        FrameLayout.LayoutParams paramsImage = new FrameLayout.LayoutParams((int)(activity.imageIconPxSize*0.95),(int)(activity.imageIconPxSize*0.95));
         paramsDelete.gravity = Gravity.TOP|Gravity.RIGHT;
         paramsInfo.gravity = Gravity.TOP|Gravity.LEFT;
         paramsImage.gravity = Gravity.CENTER_HORIZONTAL;
