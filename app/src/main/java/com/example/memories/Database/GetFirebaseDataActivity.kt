@@ -31,20 +31,26 @@ import com.google.firebase.database.ValueEventListener
 
 import com.google.firebase.database.FirebaseDatabase
 import okhttp3.Response
+import com.jjoe64.graphview.LegendRenderer
+
+
+
 
 
 class GetFirebaseDataActivity : AppCompatActivity() {
     var database : DatabaseReference = Firebase.database.reference
     var userId = ""
     var gamesList : ArrayList<GameObject> = ArrayList()
+    lateinit var graphView: GraphView  //for the number of tries
+    lateinit var graphDuration: GraphView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         //userId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
         // Get data from SharedPreferences
         val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
+
         if(!sharedPreferences.contains("userID")){
             Toast.makeText(this, "Vous devez scanner le code du téléphone dont vous voulez récupérer les résultats", Toast.LENGTH_LONG).show()
             //Send to scan QRCODE activity :
@@ -53,10 +59,35 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         }
         //set content to see graph of results
         setContentView(com.example.memories.R.layout.games_results)
+
         userId = sharedPreferences.getString("userID","").toString()
+        graphView = findViewById(com.example.memories.R.id.graph)
+        graphDuration = findViewById(com.example.memories.R.id.graph2)
+        //Graph init
+        initGraph(graphView)
+        initGraph(graphDuration)
 
         recoverListOfGames(userId)
 
+
+
+    }
+
+    fun initGraph(graph: GraphView) {
+        // first series is a line
+
+        // set manual X bounds
+        graph.viewport.isYAxisBoundsManual = true
+        graph.viewport.setMinY(0.0)
+        graph.viewport.setMaxY(35.0)
+        graph.viewport.isXAxisBoundsManual = true
+        graph.viewport.setMinX(0.0)
+        graph.viewport.setMaxX(100.0)
+
+        // enable scaling
+        graph.viewport.isScalable = true
+        graph.legendRenderer.isVisible = true
+        graph.legendRenderer.align = LegendRenderer.LegendAlign.TOP
     }
 
     fun recoverListOfGames(user : String){
@@ -87,13 +118,12 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         }
     }
 
+
     //Recover and display the data from the database
     fun makeDataPretty() {
 
         try { //get the graphViews
-            var graphView: GraphView =
-                findViewById(com.example.memories.R.id.graph) //for the number of tries
-            var graphDuration: GraphView = findViewById(com.example.memories.R.id.graph2)
+
 
             //Create empty series
             val series: LineGraphSeries<DataPoint> = LineGraphSeries()
@@ -111,17 +141,18 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         DataPoint(
                             i.toDouble(),
                             gameItem.getMNbTry().toString().toDouble()
-                        ), true, 100
+                        ), true, 35
                     )
+                    series.title = "Number of tries"
                     //Add the data of the duration by filling a serie
 
                     seriesduration.appendData(
                         DataPoint(
                             i++.toDouble(),
                             gameItem.getMDuration().toString().toDouble()
-                        ), true, 100
+                        ), true, 35
                     )
-
+                    seriesduration.title = "Duration in seconds"
                 }
             }
 
@@ -129,7 +160,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
             graphView.addSeries(series)
             graphDuration.addSeries(seriesduration)
         } catch (e: IllegalArgumentException) {
-            //If trouble toast the user
+            //If trouble, toast the user
             Toast.makeText(this@GetFirebaseDataActivity, e.message, Toast.LENGTH_LONG).show()
         }
 
