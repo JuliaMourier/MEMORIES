@@ -41,7 +41,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
     private static final String FILE_NAME = "foldersName.txt";
     LinearLayout principalLayout;
     GridLayout foldersGridLayout;
-    ImageButton addButton, generalDeleteButton;
+    ImageButton addButton, generalDeleteButton, playButton;
     float density, dpHeight, dpWidth;
     int rowCount, columnCount,folderIconPxSize;
     ArrayList<String> foldersNameListOnStorage=new ArrayList<String>();
@@ -79,13 +79,26 @@ public class ShowFoldersActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Dossier photos");
         selectedCards=selectedImagesPreferences.getAll().size();
-        if(selectionMode)
-            toolbar.setTitle("Images sélectionnées "+selectedCards+"/"+nbCards);
+
         folderIconPxSize = (int)(outMetrics.widthPixels/columnCount);
         this.principalLayout = findViewById(R.id.principal_layout);
         this.foldersGridLayout= findViewById(R.id.folder_grid);
         this.addButton = findViewById(R.id.add_button);
+        this.playButton = findViewById(R.id.play_button);
         this.generalDeleteButton = findViewById(R.id.delete_button);
+        if(selectionMode){
+            toolbar.setTitle("Images sélectionnées "+selectedCards+"/"+nbCards);
+            addButton.setVisibility(View.INVISIBLE);
+            generalDeleteButton.setVisibility(View.INVISIBLE);
+            playButton.setVisibility(View.VISIBLE);
+        }
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent memoriesGame = new Intent(ShowFoldersActivity.this, GameActivity.class);
+                ShowFoldersActivity.this.startActivity(memoriesGame);
+            }
+        });
         generalDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

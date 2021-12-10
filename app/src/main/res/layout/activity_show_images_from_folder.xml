@@ -56,6 +56,16 @@
                 android:background="@android:color/transparent"
                 android:paddingLeft="10dp"
                 android:paddingBottom="10dp"></ImageButton>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/play_button"
+                android:id="@+id/play_button"
+                android:layout_gravity="right"
+                android:background="@android:color/transparent"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:visibility="invisible"></ImageButton>
 
         </FrameLayout>
     </FrameLayout>

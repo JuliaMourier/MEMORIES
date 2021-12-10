@@ -36,7 +36,7 @@ import java.util.ArrayList;
 public class ShowImagesFromFolderActivity extends AppCompatActivity {
     String folderName;
     TextView folderNameTextView;
-    ImageButton addButton, deleteButton, infoButton;
+    ImageButton addButton, deleteButton, infoButton, playButton;
     GridLayout foldersGridLayout;
     LinearLayout principalLayout;
     float density, dpHeight, dpWidth;
@@ -81,6 +81,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         addButton = findViewById(R.id.add_button);
         deleteButton = findViewById(R.id.delete_button);
         infoButton = findViewById(R.id.info_button);
+        playButton = findViewById(R.id.play_button);
         foldersGridLayout = findViewById(R.id.folder_grid);
 
         this.loadSelectedImages();
@@ -96,6 +97,20 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         columnCount=3;
         imageIconPxSize = (int)(dpWidth/columnCount*density);
         this.initGallery();
+        if(selectionMode){
+            addButton.setVisibility(View.INVISIBLE);
+            deleteButton.setVisibility(View.INVISIBLE);
+            infoButton.setVisibility(View.INVISIBLE);
+            playButton.setVisibility(View.VISIBLE);
+
+        }
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent memoriesGame = new Intent(ShowImagesFromFolderActivity.this, GameActivity.class);
+                ShowImagesFromFolderActivity.this.startActivity(memoriesGame);
+            }
+        });
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
