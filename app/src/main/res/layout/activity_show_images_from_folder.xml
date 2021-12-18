@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ShowFoldersActivity"
-    android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="top">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/folder_name"
-            android:textSize="30sp"
-            android:paddingLeft="20dp">
-        </TextView>
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:rowCount="4"
-            android:columnCount="4"
-            android:id="@+id/folder_grid"
-            android:layout_gravity="center_horizontal">
-        </GridLayout>
-    </LinearLayout>
+    android:orientation="vertical"
+    android:id="@+id/principal_layout">
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar">
+    </include>
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
-        <ImageButton
-            android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="550dp">
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:id="@+id/folder_grid"
+                android:layout_gravity="center_horizontal">
+            </GridLayout>
+        </ScrollView>
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/plus"
-            android:id="@+id/add_button"
-            android:layout_gravity="right"
-            android:background="@android:color/transparent"
-            android:paddingRight="10dp"
-            android:paddingBottom="10dp"></ImageButton>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/info"
-            android:id="@+id/info_button"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:paddingBottom="10dp"></ImageButton>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/minus"
-            android:id="@+id/delete_button"
-            android:layout_gravity="left"
-            android:background="@android:color/transparent"
-            android:paddingLeft="10dp"
-            android:paddingBottom="10dp"></ImageButton>
+            android:layout_gravity="bottom">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/plus"
+                android:id="@+id/add_button"
+                android:layout_gravity="right"
+                android:background="@android:color/transparent"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"></ImageButton>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/info"
+                android:id="@+id/info_button"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:paddingBottom="10dp"></ImageButton>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/minus"
+                android:id="@+id/delete_button"
+                android:layout_gravity="left"
+                android:background="@android:color/transparent"
+                android:paddingLeft="10dp"
+                android:paddingBottom="10dp"></ImageButton>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/play_button"
+                android:id="@+id/play_button"
+                android:layout_gravity="right"
+                android:background="@android:color/transparent"
+                android:paddingRight="10dp"
+                android:paddingBottom="10dp"
+                android:visibility="invisible"></ImageButton>
 
+        </FrameLayout>
     </FrameLayout>
+</LinearLayout>
 
-</FrameLayout>

@@ -19,10 +19,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -37,25 +39,32 @@ import java.util.ArrayList;
 
 public class ShowFoldersActivity extends AppCompatActivity {
     private static final String FILE_NAME = "foldersName.txt";
+    LinearLayout principalLayout;
     GridLayout foldersGridLayout;
-    ImageButton addButton, generalDeleteButton;
+    ImageButton addButton, generalDeleteButton, playButton;
     float density, dpHeight, dpWidth;
     int rowCount, columnCount,folderIconPxSize;
     ArrayList<String> foldersNameListOnStorage=new ArrayList<String>();
     ArrayList<String> foldersNameList=new ArrayList<String>();
     AlertDialog.Builder builder, builder1;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<ImageButton>();
-    SharedPreferences preferences;
+    SharedPreferences preferences, selectedImagesPreferences;
     SharedPreferences.Editor editor;
     private int STORAGE_PERMISSION_CODE = 1;
     private static final String SHARED_PREF_USER_INFO = "folderNames";
+    boolean selectionMode;
+    int nbCards, selectedCards;
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_folders);
         preferences = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE);
         editor = preferences.edit();
+        selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);
 
+        selectionMode = this.getIntent().getBooleanExtra("selectionMode",false);
+        nbCards = this.getIntent().getIntExtra("nbCards",0);
         this.loadFoldersNameFromStorage();
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics ();
@@ -67,10 +76,29 @@ public class ShowFoldersActivity extends AppCompatActivity {
         rowCount =4;
         columnCount=4;
 
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Dossier photos");
+        selectedCards=selectedImagesPreferences.getAll().size();
+
         folderIconPxSize = (int)(outMetrics.widthPixels/columnCount);
-        this.foldersGridLayout= (GridLayout)findViewById(R.id.folder_grid);
+        this.principalLayout = findViewById(R.id.principal_layout);
+        this.foldersGridLayout= findViewById(R.id.folder_grid);
         this.addButton = findViewById(R.id.add_button);
+        this.playButton = findViewById(R.id.play_button);
         this.generalDeleteButton = findViewById(R.id.delete_button);
+        if(selectionMode){
+            toolbar.setTitle("Images sélectionnées "+selectedCards+"/"+nbCards);
+            addButton.setVisibility(View.INVISIBLE);
+            generalDeleteButton.setVisibility(View.INVISIBLE);
+            playButton.setVisibility(View.VISIBLE);
+        }
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent memoriesGame = new Intent(ShowFoldersActivity.this, GameActivity.class);
+                ShowFoldersActivity.this.startActivity(memoriesGame);
+            }
+        });
         generalDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,6 +126,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent ShowImagesFromFolderIntent = new Intent(ShowFoldersActivity.this, ShowImagesFromFolderActivity.class);
                     ShowImagesFromFolderIntent.putExtra("folderName",folderNameText);
+                    ShowImagesFromFolderIntent.putExtra("selectionMode",selectionMode);
+                    ShowImagesFromFolderIntent.putExtra("nbCards",nbCards);
                     ShowFoldersActivity.this.startActivity(ShowImagesFromFolderIntent);
                 }
             });
@@ -152,6 +182,14 @@ public class ShowFoldersActivity extends AppCompatActivity {
         this.setOnClick(addButton,this);
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(selectionMode)
+            this.getCurrentSelectedImagesNumber();
+    }
+
     protected void addFolder(){
         builder.setMessage("Nom de dossier")
                 .setCancelable(false)
@@ -209,6 +247,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Intent ShowImagesFromFolderIntent = new Intent(activity, ShowImagesFromFolderActivity.class);
                             ShowImagesFromFolderIntent.putExtra("folderName",folderNameText);
+                            ShowImagesFromFolderIntent.putExtra("selectionMode",selectionMode);
+                            ShowImagesFromFolderIntent.putExtra("nbCards",nbCards);
                             activity.startActivity(ShowImagesFromFolderIntent);
                         }
                     });
@@ -414,5 +454,9 @@ public class ShowFoldersActivity extends AppCompatActivity {
                 //Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    public void getCurrentSelectedImagesNumber(){
+        selectedCards = this.selectedImagesPreferences.getAll().size();
+        toolbar.setTitle("Images sélectionnées "+selectedCards+"/"+nbCards);
     }
 }

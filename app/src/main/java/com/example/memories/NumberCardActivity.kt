@@ -29,7 +29,7 @@ class NumberCardActivity : AppCompatActivity() {
         var validationButton : Button = findViewById(R.id.choice_number_menu_validate_b)
         nbCardsView.setText(nbCards.toString());
 
-        val intent = Intent(this@NumberCardActivity, MainActivity::class.java)
+        val intent = Intent(this@NumberCardActivity, ShowFoldersActivity::class.java)
 
 
 
@@ -57,6 +57,7 @@ class NumberCardActivity : AppCompatActivity() {
         validationButton.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 intent.putExtra("nbCards", nbCards)
+                intent.putExtra("selectionMode",true);
                 startActivity(intent)
             }})
 
