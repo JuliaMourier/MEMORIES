@@ -1,34 +1,55 @@
 package com.example.memories;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.memories.Database.FirebaseActivity;
+import com.google.android.material.resources.TextAppearance;
 import com.wajahatkarim3.easyflipview.EasyFlipView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import nl.dionsegijn.konfetti.KonfettiView;
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Size;
+
+
 
 public class GameActivity extends AppCompatActivity {
     SelectedImages selectedImagesLoader;
@@ -38,10 +59,18 @@ public class GameActivity extends AppCompatActivity {
     Map<ImageView,Integer> imageViewMap = new HashMap<>();
     Map<EasyFlipView, Boolean> easyFlipViewBooleanMap = new HashMap<EasyFlipView, Boolean>();
     boolean flippingCard = false;
+    public MediaPlayer mp;
+    //Chronometer and nb of tries
+    int nbTries = 0;
+    private int seconds = 0; // number of seconds since launched
+    private boolean running = false;//is it running or not?
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics ();
         display.getMetrics(outMetrics);
@@ -108,6 +137,7 @@ public class GameActivity extends AppCompatActivity {
                                         Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
                                     }
                                     else{
+                                        nbTries++;
                                         easyFlipViewBooleanMap.put(cardFlipView,true);
                                         cardFlipView.flipTheView(true);
                                         flippedCards = findFlippedCard();
@@ -153,8 +183,15 @@ public class GameActivity extends AppCompatActivity {
                 }
             });
         }
-
+        //Launch chronometer
+        running = true;
+        runTimer();
+        //Gives the sound to mediaplayer
+        mp = MediaPlayer.create(this, R.raw.winsound);
     }
+
+
+
     public ArrayList<EasyFlipView> findFlippedCard(){
         ArrayList<EasyFlipView> flippedCards = new ArrayList<>();
         for(EasyFlipView cardFlipView : easyFlipViewBooleanMap.keySet()){
@@ -186,6 +223,7 @@ public class GameActivity extends AppCompatActivity {
         }
 
     }
+
     public void showImage(ImageView imageView) {
         Dialog builder = new Dialog(this);
         builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -194,7 +232,11 @@ public class GameActivity extends AppCompatActivity {
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                //nothing;
+                //Test WIN;
+                if(easyFlipViewBooleanMap.isEmpty()){
+                    //WIN
+                    onGameWin();
+                }
             }
         });
         builder.addContentView(imageView, new ViewGroup.LayoutParams(
@@ -203,6 +245,128 @@ public class GameActivity extends AppCompatActivity {
         builder.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
 
         builder.show();
+    }
+
+    public void showRestartMenu() {
+
+        Dialog builder = new Dialog(this);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                //Test WIN;
+                if(easyFlipViewBooleanMap.isEmpty()){
+                    //WIN
+                    onGameWin();
+                }
+            }
+        });
+        Button restartView = new Button(getApplicationContext());
+        restartView.setText("RECOMMENCER");
+        restartView.setTextSize(42);
+        restartView.setPadding(100, 100,100,100);
+
+        restartView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                builder.dismiss();
+                onRestartGame();
+
+            }
+        });
+        Button menuView = new Button(getApplicationContext());
+        menuView.setText("MENU");
+        menuView.setTextSize(42);
+        menuView.setPadding(100, 100,100,100);
+        menuView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                builder.dismiss();
+                Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+                startActivity(intent);
+            }
+        });
+        LinearLayout lv = new LinearLayout(getApplicationContext());
+        lv.setOrientation(LinearLayout.VERTICAL);
+        lv.addView(restartView);
+        lv.addView(menuView);
+        builder.addContentView(lv, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        
+        builder.show();
+    }
+
+    private void runTimer() { //timer
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run () {
+
+                double t = SystemClock.elapsedRealtime();
+                if (running) {
+                    seconds++;
+                }
+                handler.postDelayed(this, 1000);
+            }
+        });
+    }
+
+    private void onGameWin(){
+        //TextView text = findViewById(R.id.findPairsText);
+        //text.setText("Bravo !!!");
+        mp.start();
+        //Stop Chronometer
+        running = false;
+        //Animation of confettis
+        final KonfettiView konfettiView = findViewById(R.id.konfettiView);
+        konfettiView.build()
+                .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.BLUE, Color.RED)
+                .setDirection(0.0, 359.0)
+                .setSpeed(1f, 5f)
+                .setFadeOutEnabled(true)
+                .setTimeToLive(2000L)
+                .addShapes(Shape.Square.INSTANCE, Shape.Circle.INSTANCE)
+                .addSizes(new Size(12, 5f))
+                .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                .streamFor(300, 5000L);
+        konfettiView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) { //When click => Konfettis
+                showRestartMenu();
+                konfettiView.build()
+                        .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA, Color.BLUE, Color.RED)
+                        .setDirection(0.0, 359.0)
+                        .setSpeed(1f, 5f)
+                        .setFadeOutEnabled(true)
+                        .setTimeToLive(2000L)
+                        .addShapes(Shape.Square.INSTANCE, Shape.Circle.INSTANCE)
+                        .addSizes(new Size(12, 5f))
+                        .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                        .streamFor(300, 5000L);
+            }
+
+        });
+
+        //Send data to database
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseActivity firebaseActivity = new FirebaseActivity();
+                firebaseActivity.writeNewGameFromGameActivity(getApplicationContext(),Integer.toString(seconds), Integer.toString(nbTries));
+            }
+        });
+    }
+
+    public void onRestartGame(){
+        //Restart the chrono
+        seconds = 0;
+        running = true;
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 
 }

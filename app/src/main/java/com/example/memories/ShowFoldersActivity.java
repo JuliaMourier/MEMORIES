@@ -59,6 +59,9 @@ public class ShowFoldersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_folders);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         preferences = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE);
         editor = preferences.edit();
         selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);

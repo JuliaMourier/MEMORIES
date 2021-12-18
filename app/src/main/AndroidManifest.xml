@@ -51,9 +51,6 @@
             android:name=".Database.FirebaseActivity"
             android:exported="true" />
         <activity
-            android:name=".Database.DatabaseActivity"
-            android:exported="true" />
-        <activity
             android:name=".ShowFoldersActivity"
             android:exported="true" />
         <activity

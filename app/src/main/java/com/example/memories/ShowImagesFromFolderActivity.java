@@ -60,7 +60,9 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         folderName = this.getIntent().getStringExtra("folderName");
         selectionMode = this.getIntent().getBooleanExtra("selectionMode",false);
         nbCards = this.getIntent().getIntExtra("nbCards",0);

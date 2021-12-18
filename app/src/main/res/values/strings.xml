@@ -10,4 +10,5 @@
     <string name="scan_me">Scannez-moi</string>
     <string name="generate_QRcode">Générer QR Code</string>
     <string name="scan_QRCode">Scanner QR Code</string>
+    <string name="restart">RECOMMENCER</string>
 </resources>
