@@ -29,12 +29,6 @@
         <activity
             android:name=".QRCode.QRCodeEncoder"
             android:exported="true" />
-<<<<<<< HEAD
-=======
-        <activity
-            android:name=".GameActivity"
-            android:exported="true" />
->>>>>>> lien_jeu
         <activity
             android:name=".MainActivity"
             android:exported="true" />
