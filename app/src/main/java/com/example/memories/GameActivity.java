@@ -2,6 +2,13 @@ package com.example.memories;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -9,9 +16,12 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.wajahatkarim3.easyflipview.EasyFlipView;
@@ -27,6 +37,7 @@ public class GameActivity extends AppCompatActivity {
     int columnCount, cardIconPxSize;
     Map<ImageView,Integer> imageViewMap = new HashMap<>();
     Map<EasyFlipView, Boolean> easyFlipViewBooleanMap = new HashMap<EasyFlipView, Boolean>();
+    boolean flippingCard = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,27 +89,65 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                        Toast.makeText(GameActivity.this,Integer.toString(countFlippedCard()), Toast.LENGTH_SHORT).show();
-                        if(countFlippedCard()==0){
-                            cardFlipView.flipTheView(true);
-                            easyFlipViewBooleanMap.put(cardFlipView, true);
-                        }
-                        else if(countFlippedCard()==1){
-                            cardFlipView.flipTheView(true);
-                            easyFlipViewBooleanMap.put(cardFlipView, true);
-                            ArrayList<EasyFlipView> flippedCards = findFlippedCard();
-                            Log.d("TAG",Integer.toString(flippedCards.size()));
-                            setAllFlipDisabledExceptedTwoOnes(flippedCards.get(0),flippedCards.get(1));
-                        }
-                        else if(countFlippedCard()==2){
-                            ArrayList<EasyFlipView> flippedCards = findFlippedCard();
-                            if(cardFlipView.equals(flippedCards.get(0)) || cardFlipView.equals(flippedCards.get(1))){
-                                cardFlipView.flipTheView(true);
-                                easyFlipViewBooleanMap.put(cardFlipView, false);
+                        if(easyFlipViewBooleanMap.keySet().contains(cardFlipView)){
+                            if(!flippingCard){
+                                flippingCard=true;
+                                ArrayList<EasyFlipView> flippedCards = findFlippedCard();
+                                int flippedCardsNumber = flippedCards.size();
+                                if(flippedCardsNumber==0){
+                                    easyFlipViewBooleanMap.put(cardFlipView,true);
+                                    cardFlipView.flipTheView(true);
+                                    flippedCards = findFlippedCard();
+                                    Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
+                                }
+                                else if(flippedCardsNumber==1){
+                                    if(flippedCards.contains(cardFlipView)){
+                                        easyFlipViewBooleanMap.put(cardFlipView,false);
+                                        cardFlipView.flipTheView(true);
+                                        flippedCards = findFlippedCard();
+                                        Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
+                                    }
+                                    else{
+                                        easyFlipViewBooleanMap.put(cardFlipView,true);
+                                        cardFlipView.flipTheView(true);
+                                        flippedCards = findFlippedCard();
+                                        ImageView imageView1 = (ImageView) flippedCards.get(0).getChildAt(0);
+                                        ImageView imageView2 = (ImageView) flippedCards.get(1).getChildAt(0);
+                                        if(imageViewMap.get(imageView1)==imageViewMap.get(imageView2)){
+                                            Log.d("TAG","Paire trouvée !");
+                                            easyFlipViewBooleanMap.remove(flippedCards.get(0));
+                                            easyFlipViewBooleanMap.remove(flippedCards.get(1));
+                                            flippedCards.get(0).setFlipEnabled(false);
+                                            flippedCards.get(1).setFlipEnabled(false);
+                                            Bitmap bm=((BitmapDrawable)imageView1.getDrawable()).getBitmap();
+                                            ImageView imagePopup = new ImageView(GameActivity.this);
+                                            imagePopup.setImageBitmap(bm);
+                                            showImage(imagePopup);
+
+                                        }
+                                        Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
+                                    }
+                                }
+                                else if(flippedCardsNumber==2){
+                                    setAllFlipDisabledExceptedTwoOnes(flippedCards.get(0),flippedCards.get(1));
+                                    if(flippedCards.contains(cardFlipView)){
+                                        easyFlipViewBooleanMap.put(cardFlipView,false);
+                                        cardFlipView.flipTheView(true);
+                                        flippedCards = findFlippedCard();
+                                        Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
+                                        setAllFlipEnabled();
+                                    }
+                                    else{
+                                        Log.d("TAG","Il faut retourner d'autre carte !");
+                                    }
+                                }
                             }
-
+                            else{
+                                Log.d("TAG","Patientez !");
+                            }
                         }
 
+                        flippingCard=false;
                     }
                     return true;
                 }
@@ -109,7 +158,7 @@ public class GameActivity extends AppCompatActivity {
     public ArrayList<EasyFlipView> findFlippedCard(){
         ArrayList<EasyFlipView> flippedCards = new ArrayList<>();
         for(EasyFlipView cardFlipView : easyFlipViewBooleanMap.keySet()){
-            if(cardFlipView.isBackSide())
+            if(easyFlipViewBooleanMap.get(cardFlipView))
                 flippedCards.add(cardFlipView);
         }
         return flippedCards;
@@ -130,13 +179,30 @@ public class GameActivity extends AppCompatActivity {
                 i++;
             }
         }
-        Toast.makeText(this, Integer.toString(i), Toast.LENGTH_SHORT).show();
     }
     public void setAllFlipEnabled(){
         for(EasyFlipView cardFlipView : easyFlipViewBooleanMap.keySet()){
             cardFlipView.setFlipEnabled(true);
         }
 
+    }
+    public void showImage(ImageView imageView) {
+        Dialog builder = new Dialog(this);
+        builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        builder.getWindow().setBackgroundDrawable(
+                new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                //nothing;
+            }
+        });
+        builder.addContentView(imageView, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        builder.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
+
+        builder.show();
     }
 
 }
