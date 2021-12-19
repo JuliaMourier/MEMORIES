@@ -33,21 +33,16 @@ import com.google.firebase.database.FirebaseDatabase
 import okhttp3.Response
 import com.jjoe64.graphview.LegendRenderer
 
-
-
-
-
 class GetFirebaseDataActivity : AppCompatActivity() {
-    var database : DatabaseReference = Firebase.database.reference
-    var userId = ""
-    var gamesList : ArrayList<GameObject> = ArrayList()
+    var database : DatabaseReference = Firebase.database.reference //Database
+    var userId = "" //user ID
+    var gamesList : ArrayList<GameObject> = ArrayList() //Will contain all played games information
     lateinit var graphView: GraphView  //for the number of tries
-    lateinit var graphDuration: GraphView
+    lateinit var graphDuration: GraphView //for the duration of the games
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //userId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
         // Get data from SharedPreferences
         val sharedPreferences = getSharedPreferences("MySharedPref", MODE_PRIVATE)
 
@@ -60,13 +55,13 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         //set content to see graph of results
         setContentView(com.example.memories.R.layout.games_results)
 
+        //Get the user ID => Unique number of the phone which the user want to observe (saved after scan in sharedPreferences)
         userId = sharedPreferences.getString("userID","").toString()
+        //Get the two graph views
         graphView = findViewById(com.example.memories.R.id.graph)
         graphDuration = findViewById(com.example.memories.R.id.graph2)
-        //Graph init
-        //initGraph(graphView, 35.0)
-        //initGraph(graphDuration, 250.0)
 
+        //Get games data from firebase
         recoverListOfGames(userId)
 
 
@@ -84,20 +79,21 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         graph.viewport.setMinX(0.0)
         graph.viewport.setMaxX(size) //Number of games
 
-        // enable scaling
+        // Enable scaling
         graph.viewport.isScalable = true
         graph.legendRenderer.isVisible = true
         graph.legendRenderer.align = LegendRenderer.LegendAlign.TOP
     }
 
-    fun recoverListOfGames(user : String){
+    fun recoverListOfGames(user : String){;
+        //Get all data of games of the user
         database.child("users").child(userId).child("games").get().addOnSuccessListener {
 
             for (gameData in it.children) {
                 var go: GameObject = GameObject()
 
                 for (info in gameData.children) {
-                    if (info.key == "date") { //get the date
+                    if (info.key == "date") { //Get the date
                         go.setMDate(info.value.toString())
                     }
                     if (info.key == "nbOfTries") { //Get the number of tries
@@ -129,6 +125,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
             val series: LineGraphSeries<DataPoint> = LineGraphSeries()
             val seriesduration: LineGraphSeries<DataPoint> = LineGraphSeries()
             var i = 0
+            //Initialisation graphs
             initGraph(graphView, 35.0,gamesList.size.toDouble())
             initGraph(graphDuration, 250.0,gamesList.size.toDouble())
             for (gameItem in gamesList) { //get through the list of games
