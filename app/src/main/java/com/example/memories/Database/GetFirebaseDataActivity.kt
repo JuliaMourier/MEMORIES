@@ -143,7 +143,6 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                             gameItem.getMNbTry().toString().toDouble()
                         ), true, 35
                     )
-                    series.title = "Number of tries"
                     //Add the data of the duration by filling a serie
 
                     seriesduration.appendData(
@@ -152,7 +151,6 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                             gameItem.getMDuration().toString().toDouble()
                         ), true, 35
                     )
-                    seriesduration.title = "Duration in seconds"
                 }
             }
 
