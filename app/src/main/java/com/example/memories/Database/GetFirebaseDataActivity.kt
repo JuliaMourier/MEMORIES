@@ -64,8 +64,8 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         graphView = findViewById(com.example.memories.R.id.graph)
         graphDuration = findViewById(com.example.memories.R.id.graph2)
         //Graph init
-        initGraph(graphView, 35.0)
-        initGraph(graphDuration, 250.0)
+        //initGraph(graphView, 35.0)
+        //initGraph(graphDuration, 250.0)
 
         recoverListOfGames(userId)
 
@@ -73,16 +73,16 @@ class GetFirebaseDataActivity : AppCompatActivity() {
 
     }
 
-    fun initGraph(graph: GraphView, maxY : Double) {
+    fun initGraph(graph: GraphView, maxY : Double, size : Double) {
         // first series is a line
 
         // set manual X bounds
         graph.viewport.isYAxisBoundsManual = true
         graph.viewport.setMinY(0.0)
-        graph.viewport.setMaxY(maxY)
+        graph.viewport.setMaxY(maxY) //Max time or max number of tries
         graph.viewport.isXAxisBoundsManual = true
         graph.viewport.setMinX(0.0)
-        graph.viewport.setMaxX(100.0)
+        graph.viewport.setMaxX(size) //Number of games
 
         // enable scaling
         graph.viewport.isScalable = true
@@ -129,7 +129,8 @@ class GetFirebaseDataActivity : AppCompatActivity() {
             val series: LineGraphSeries<DataPoint> = LineGraphSeries()
             val seriesduration: LineGraphSeries<DataPoint> = LineGraphSeries()
             var i = 0
-
+            initGraph(graphView, 35.0,gamesList.size.toDouble())
+            initGraph(graphDuration, 250.0,gamesList.size.toDouble())
             for (gameItem in gamesList) { //get through the list of games
 
                 //add the data in the graph series
@@ -144,7 +145,6 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         ), true, 35
                     )
                     //Add the data of the duration by filling a serie
-
                     seriesduration.appendData(
                         DataPoint(
                             i++.toDouble(),

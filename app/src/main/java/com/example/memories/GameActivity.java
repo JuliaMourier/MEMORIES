@@ -253,6 +253,13 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         });
+        //Dismiss the dialog image on click
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                builder.dismiss();
+            }
+        });
         builder.addContentView(imageView, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
@@ -270,11 +277,7 @@ public class GameActivity extends AppCompatActivity {
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                //Test WIN;
-                if(easyFlipViewBooleanMap.isEmpty()){
-                    //WIN
-                    onGameWin();
-                }
+                //Do nothing
             }
         });
         Button restartView = new Button(getApplicationContext());
