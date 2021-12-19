@@ -154,9 +154,17 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     }
     public void addImagetoGrid(Uri imageUri, boolean saveOnStorage, int imageId){
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
-
+        Bitmap bitmap = null;
         ImageView imageView = new ImageView(activity);
-        imageView.setImageURI(imageUri);
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            Bitmap bitmapScaled = scaleDown(bitmap, this.imageIconPxSize, true);
+            imageView.setImageBitmap(bitmapScaled);
+        } catch (IOException e) {
+            e.printStackTrace();
+            imageView.setImageURI(imageUri);
+        }
+        //imageView.setImageURI(imageUri);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         ImageButton infoImageButton = new ImageButton(this);
         ImageButton deleteImageButton = new ImageButton(this);
@@ -362,6 +370,18 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     public void getCurrentSelectedImagesNumber(){
         selectedCards = this.selectedImagesPreferences.getAll().size();
         toolbar.setTitle("Images sélectionnées "+selectedCards+"/"+nbCards);
+    }
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
     }
 
 
