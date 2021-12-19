@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -66,7 +67,6 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         folderName = this.getIntent().getStringExtra("folderName");
         selectionMode = this.getIntent().getBooleanExtra("selectionMode",false);
         nbCards = this.getIntent().getIntExtra("nbCards",0);
-
         preferences = getSharedPreferences(folderName, MODE_PRIVATE);
         selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);
         selectedImagesDescriptionPreferences = getSharedPreferences("selectedImagesDescription", MODE_PRIVATE);
@@ -109,8 +109,10 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent memoriesGame = new Intent(ShowImagesFromFolderActivity.this, GameActivity.class);
-                ShowImagesFromFolderActivity.this.startActivity(memoriesGame);
+                if(selectedCards==nbCards){
+                    Intent memoriesGame = new Intent(ShowImagesFromFolderActivity.this, GameActivity.class);
+                    ShowImagesFromFolderActivity.this.startActivity(memoriesGame);
+                }
             }
         });
         addButton.setOnClickListener(new View.OnClickListener() {

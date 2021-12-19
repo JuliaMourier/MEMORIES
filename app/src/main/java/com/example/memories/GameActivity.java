@@ -141,19 +141,28 @@ public class GameActivity extends AppCompatActivity {
                                         easyFlipViewBooleanMap.put(cardFlipView,true);
                                         cardFlipView.flipTheView(true);
                                         flippedCards = findFlippedCard();
-                                        ImageView imageView1 = (ImageView) flippedCards.get(0).getChildAt(0);
-                                        ImageView imageView2 = (ImageView) flippedCards.get(1).getChildAt(0);
+                                        EasyFlipView flippedCard1 = flippedCards.get(0);
+                                        EasyFlipView flippedCard2 = flippedCards.get(1);
+                                        ImageView imageView1 = (ImageView) flippedCard1.getChildAt(0);
+                                        ImageView imageView2 = (ImageView) flippedCard2.getChildAt(0);
                                         if(imageViewMap.get(imageView1)==imageViewMap.get(imageView2)){
                                             Log.d("TAG","Paire trouvée !");
-                                            easyFlipViewBooleanMap.remove(flippedCards.get(0));
-                                            easyFlipViewBooleanMap.remove(flippedCards.get(1));
-                                            flippedCards.get(0).setFlipEnabled(false);
-                                            flippedCards.get(1).setFlipEnabled(false);
+                                            easyFlipViewBooleanMap.remove(flippedCard1);
+                                            easyFlipViewBooleanMap.remove(flippedCard2);
+                                            flippedCard1.setFlipEnabled(false);
+                                            flippedCard2.setFlipEnabled(false);
                                             Bitmap bm=((BitmapDrawable)imageView1.getDrawable()).getBitmap();
                                             ImageView imagePopup = new ImageView(GameActivity.this);
                                             imagePopup.setImageBitmap(bm);
                                             showImage(imagePopup);
 
+                                        }
+                                        else{
+                                            flippedCard1.setAutoFlipBack(true);
+                                            flippedCard2.setAutoFlipBack(true);
+                                            easyFlipViewBooleanMap.put(flippedCard1,false);
+                                            easyFlipViewBooleanMap.put(flippedCard2,false);
+                                            Log.d("TAG","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                                         }
                                         Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
                                     }

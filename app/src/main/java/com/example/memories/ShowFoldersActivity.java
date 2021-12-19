@@ -67,7 +67,7 @@ public class ShowFoldersActivity extends AppCompatActivity {
         selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);
 
         selectionMode = this.getIntent().getBooleanExtra("selectionMode",false);
-        nbCards = this.getIntent().getIntExtra("nbCards",0);
+        nbCards = this.getIntent().getIntExtra("nbCards",0)/2;
         this.loadFoldersNameFromStorage();
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics ();
@@ -98,8 +98,10 @@ public class ShowFoldersActivity extends AppCompatActivity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent memoriesGame = new Intent(ShowFoldersActivity.this, GameActivity.class);
-                ShowFoldersActivity.this.startActivity(memoriesGame);
+                if(selectedCards==nbCards){
+                    Intent memoriesGame = new Intent(ShowFoldersActivity.this, GameActivity.class);
+                    ShowFoldersActivity.this.startActivity(memoriesGame);
+                }
             }
         });
         generalDeleteButton.setOnClickListener(new View.OnClickListener() {
