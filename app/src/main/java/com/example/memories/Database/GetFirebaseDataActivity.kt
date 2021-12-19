@@ -64,8 +64,8 @@ class GetFirebaseDataActivity : AppCompatActivity() {
         graphView = findViewById(com.example.memories.R.id.graph)
         graphDuration = findViewById(com.example.memories.R.id.graph2)
         //Graph init
-        initGraph(graphView)
-        initGraph(graphDuration)
+        initGraph(graphView, 35.0)
+        initGraph(graphDuration, 250.0)
 
         recoverListOfGames(userId)
 
@@ -73,13 +73,13 @@ class GetFirebaseDataActivity : AppCompatActivity() {
 
     }
 
-    fun initGraph(graph: GraphView) {
+    fun initGraph(graph: GraphView, maxY : Double) {
         // first series is a line
 
         // set manual X bounds
         graph.viewport.isYAxisBoundsManual = true
         graph.viewport.setMinY(0.0)
-        graph.viewport.setMaxY(35.0)
+        graph.viewport.setMaxY(maxY)
         graph.viewport.isXAxisBoundsManual = true
         graph.viewport.setMinX(0.0)
         graph.viewport.setMaxX(100.0)
@@ -150,7 +150,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         DataPoint(
                             i++.toDouble(),
                             gameItem.getMDuration().toString().toDouble()
-                        ), true, 120
+                        ), true, 35
                     )
                     seriesduration.title = "Duration in seconds"
                 }
