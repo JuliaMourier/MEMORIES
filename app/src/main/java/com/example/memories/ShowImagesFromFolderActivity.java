@@ -188,6 +188,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         paramsImage.gravity = Gravity.CENTER_HORIZONTAL;
         if(selectionMode){
             if(selectedImageID.contains(imageId)){
+                Log.d("TAG", "JE SUIS SEELECTIONE");
                 imageView.setColorFilter(Color.argb(90, 0, 0, 255));
                 selectedImageView.add(imageView);
             }
@@ -337,12 +338,13 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     public void loadSelectedImages(){
         String imageViewId="";
         int i = 0;
-        while(imageViewId!=null){
+        int n = preferences.getAll().size();
+        while(i<n){
             imageViewId = preferences.getString(Integer.toString(i)+"_selected",null);
             if(imageViewId!=null){
                 selectedImageID.add(i);
-                i++;
             }
+            i++;
         }
     }
     public void setAllDeleteButtonVisibility(boolean visibilityBool){

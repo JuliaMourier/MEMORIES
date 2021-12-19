@@ -28,6 +28,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -158,11 +159,15 @@ public class GameActivity extends AppCompatActivity {
 
                                         }
                                         else{
+                                            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                                             flippedCard1.setAutoFlipBack(true);
                                             flippedCard2.setAutoFlipBack(true);
                                             easyFlipViewBooleanMap.put(flippedCard1,false);
                                             easyFlipViewBooleanMap.put(flippedCard2,false);
                                             Log.d("TAG","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+
                                         }
                                         Log.d("TAG",Integer.toString(flippedCards.size())+" cartes retournées");
                                     }
