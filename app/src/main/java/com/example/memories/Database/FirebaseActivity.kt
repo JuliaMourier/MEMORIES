@@ -23,7 +23,7 @@ class FirebaseActivity : AppCompatActivity() {
     //var mRef : Firebase = Firebase.database("https://memories-8cc20-default-rtdb.firebaseio.com/")
     var database = Firebase.database.reference
     var userID = ""
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //Initialisation of firebase

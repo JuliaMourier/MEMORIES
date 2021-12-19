@@ -26,7 +26,7 @@ class QRCodeScanner : AppCompatActivity() {
     //THIS CODE HAS BEEN TAKEN FROM
     // https://github.com/yuriy-budiyev/code-scanner
     // https://www.geeksforgeeks.org/shared-preferences-in-android-with-examples/
-    //https://stackoverflow.com/questions/38552144/how-get-permission-for-camera-in-android-specifically-marshmallow
+    // https://stackoverflow.com/questions/38552144/how-get-permission-for-camera-in-android-specifically-marshmallow
     private lateinit var codeScanner: CodeScanner
     private val MY_CAMERA_REQUEST_CODE = 100
 

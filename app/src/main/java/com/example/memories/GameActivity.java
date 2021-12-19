@@ -54,6 +54,8 @@ import nl.dionsegijn.konfetti.models.Size;
 
 
 public class GameActivity extends AppCompatActivity {
+    //This has been realized with :
+    //https://github.com/DanielMartinus/Konfetti
     SelectedImages selectedImagesLoader;
     ArrayList<ImageFromStorage> selectedImagesFromStorage;
     GridLayout cardGrid;
