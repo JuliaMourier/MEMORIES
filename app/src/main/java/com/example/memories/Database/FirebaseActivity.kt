@@ -23,40 +23,15 @@ class FirebaseActivity : AppCompatActivity() {
     //var mRef : Firebase = Firebase.database("https://memories-8cc20-default-rtdb.firebaseio.com/")
     var database = Firebase.database.reference
     var userID = ""
-    //val userID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-    var duration: TextView? = null //Text view to get the duraction entry
-    var numberOfTry: TextView? = null //and the number of try for the game
-    var dateAndTime : String = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date()) + " " + SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(
-        Date()
-    ); //get the date of the submitting game
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       /* setContentView(R.layout.idtest)
-        userID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID).toUpperCase();
-
-        val idtext: TextView = findViewById(R.id.idText)
-        idtext.text = userID.toUpperCase()*/
-
+        //Initialisation of firebase
         Firebase.initialize(this)
+        //If the user doesn't exits => Create one
         if(database.child("users").child(userID) == null){ //if user do
             writeNewUser(userID, userID)
         }
-        /*numberOfTry = findViewById(R.id.numberOfTry)
-        duration = findViewById(R.id.timeText)
-        var buttonSave : Button = findViewById(R.id.button)
-
-        buttonSave.setOnClickListener(View.OnClickListener { view ->
-            var tmpDate : String = dateAndTime.replace("/","-")
-            writeNewGame(tmpDate, userID, dateAndTime, numberOfTry?.text.toString(),duration?.text.toString())
-        })
-
-        var resultButton: Button = findViewById(R.id.results)
-        resultButton.setOnClickListener(View.OnClickListener { view ->
-            var intent : Intent = Intent(this, GetFirebaseDataActivity::class.java)
-            startActivity(intent)
-        })*/
-
     }
 
     fun writeNewUser(userId: String, phoneId: String) {
