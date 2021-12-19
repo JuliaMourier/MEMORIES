@@ -295,7 +295,7 @@ public class GameActivity extends AppCompatActivity {
         builder.addContentView(lv, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        
+
         builder.show();
     }
 

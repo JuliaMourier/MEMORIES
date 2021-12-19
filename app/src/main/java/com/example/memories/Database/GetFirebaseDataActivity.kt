@@ -150,7 +150,7 @@ class GetFirebaseDataActivity : AppCompatActivity() {
                         DataPoint(
                             i++.toDouble(),
                             gameItem.getMDuration().toString().toDouble()
-                        ), true, 35
+                        ), true, 120
                     )
                     seriesduration.title = "Duration in seconds"
                 }
