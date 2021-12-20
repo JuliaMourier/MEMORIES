@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,12 +21,14 @@ public class SelectedImages {
 
     Map<String, String> selectedImagesURI;
     Map<String, String> selectedImagesDescription;
+    int imageIconPxSize;
 
     public int getSelectedImagesNumber(){
         return imageList.size();
     }
-    public SelectedImages(Context context){
+    public SelectedImages(Context context, int imageIconPxSize_){
         this.context=context;
+        imageIconPxSize=imageIconPxSize_;
         selectedImagesPreferences = context.getSharedPreferences("selectedImages", Context.MODE_PRIVATE);
         selectedImagesDescriptionPreferences = context.getSharedPreferences("selectedImagesDescription", Context.MODE_PRIVATE);
         selectedImagesEditor = selectedImagesPreferences.edit();
@@ -45,7 +48,7 @@ public class SelectedImages {
                 selectedImageDescription = selectedImagesDescription.get(imageId);
             else
                 selectedImageDescription = "";
-            ImageFromStorage selectedImage = new ImageFromStorage(selectedImageUri, selectedImageDescription, contentResolver);
+            ImageFromStorage selectedImage = new ImageFromStorage(selectedImageUri, selectedImageDescription, context, imageIconPxSize);
             imageList.add(selectedImage);
         }
     }

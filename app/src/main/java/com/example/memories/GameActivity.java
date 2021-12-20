@@ -81,7 +81,7 @@ public class GameActivity extends AppCompatActivity {
         columnCount=3;
         cardIconPxSize = (int)(outMetrics.widthPixels/columnCount);
 
-        selectedImagesLoader = new SelectedImages(this);
+        selectedImagesLoader = new SelectedImages(this, cardIconPxSize);
         selectedImagesFromStorage = selectedImagesLoader.imageList;
         cardGrid = findViewById(R.id.card_grid);
 
