@@ -1,12 +1,15 @@
 package com.example.memories;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -32,7 +35,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShowImagesFromFolderActivity extends AppCompatActivity {
     String folderName;
@@ -45,7 +51,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     private static final int LOAD_IMAGE = 99;
 
-    public ArrayList<Uri> imageList = new ArrayList<Uri>();
+    public Map<Integer, Uri> imageList = new HashMap<Integer, Uri>();
     SharedPreferences preferences, selectedImagesPreferences, selectedImagesDescriptionPreferences;
     SharedPreferences.Editor editor, selectedImagesEditor, selectedImagesDescriptionEditor;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<>();
@@ -144,24 +150,89 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
             Uri imageUri = data.getData();
-            ShowImagesFromFolderActivity.this.addImagetoGrid(imageUri, true, imageList.size());
+            int i =0;
+            while(imageList.keySet().contains(i)){
+                i++;
+            }
+            ShowImagesFromFolderActivity.this.addImagetoGrid(imageUri, true, i);
         }
     }
     public void initGallery(){
-        int n = imageList.size();
-        for(int i=0;i<n;i++){
+        for(int i : imageList.keySet()){
             Uri imageUri = imageList.get(i);
             this.addImagetoGrid(imageUri,false, i);
         }
+    }
+    public static int getOrientation(Context context, Uri photoUri) {
+        /* it's on the external media. */
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+
+        if (cursor.getCount() != 1) {
+            return -1;
+        }
+
+        cursor.moveToFirst();
+        return cursor.getInt(0);
+    }
+    public  Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri) throws IOException {
+        InputStream is = context.getContentResolver().openInputStream(photoUri);
+        BitmapFactory.Options dbo = new BitmapFactory.Options();
+        dbo.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(is, null, dbo);
+        is.close();
+
+        int rotatedWidth, rotatedHeight;
+        int orientation = getOrientation(context, photoUri);
+
+        if (orientation == 90 || orientation == 270) {
+            rotatedWidth = dbo.outHeight;
+            rotatedHeight = dbo.outWidth;
+        } else {
+            rotatedWidth = dbo.outWidth;
+            rotatedHeight = dbo.outHeight;
+        }
+
+        Bitmap srcBitmap;
+        is = context.getContentResolver().openInputStream(photoUri);
+        int MAX_IMAGE_DIMENSION = imageIconPxSize;
+        if (rotatedWidth > MAX_IMAGE_DIMENSION || rotatedHeight > MAX_IMAGE_DIMENSION) {
+            float widthRatio = ((float) rotatedWidth) / ((float) MAX_IMAGE_DIMENSION);
+            float heightRatio = ((float) rotatedHeight) / ((float) MAX_IMAGE_DIMENSION);
+            float maxRatio = Math.max(widthRatio, heightRatio);
+
+            // Create the bitmap from file
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = (int) maxRatio;
+            srcBitmap = BitmapFactory.decodeStream(is, null, options);
+        } else {
+            srcBitmap = BitmapFactory.decodeStream(is);
+        }
+        is.close();
+
+        /*
+         * if the orientation is not 0 (or -1, which means we don't know), we
+         * have to do a rotation.
+         */
+        if (orientation > 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(orientation);
+
+            srcBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(),
+                    srcBitmap.getHeight(), matrix, true);
+        }
+
+        return srcBitmap;
     }
     public int addImagetoGrid(Uri imageUri, boolean saveOnStorage, int imageId){
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
         Bitmap bitmap = null;
         ImageView imageView = new ImageView(activity);
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-            Bitmap bitmapScaled = scaleDown(bitmap, this.imageIconPxSize, true);
-            imageView.setImageBitmap(bitmapScaled);
+            //bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            //Bitmap bitmapScaled = scaleDown(bitmap, this.imageIconPxSize, true);
+            bitmap = getCorrectlyOrientedImage(this, imageUri);
+            imageView.setImageBitmap(bitmap);
         } catch (IOException e) {
             e.printStackTrace();
             editor.remove(Integer.toString(imageId));
@@ -299,10 +370,16 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 ShowImagesFromFolderActivity.this.foldersGridLayout.removeView(imageFrameLayout);
-                                imageList.remove(imageUri);
+                                imageList.remove(imageId);
+                                Log.d("TAG","Id supprimé "+Integer.toString(imageId));
                                 editor.remove(Integer.toString(imageId));
                                 editor.remove(Integer.toString(imageId)+"_comment");
+                                editor.remove(Integer.toString(imageId)+"_selected");
+                                selectedImagesEditor.remove(folderName+"_"+Integer.toString(imageId));
+                                selectedImagesDescriptionEditor.remove(folderName+"_"+Integer.toString(imageId));
                                 editor.apply();
+                                selectedImagesEditor.apply();
+                                selectedImagesDescriptionEditor.apply();
                             }
                         })
                         .setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -319,16 +396,14 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             }
         });
         if(saveOnStorage){
-            activity.imageList.add(imageUri);
+            activity.imageList.put(imageId,imageUri);
             activity.saveImagesOnStorage();
         }
     return 1;
     }
     public void saveImagesOnStorage(){
-        int n = imageList.size();
-        for(int i=0;i<n;i++){
+        for(int i : imageList.keySet()){
             editor.putString(Integer.toString(i),imageList.get(i).toString());
-
         }
         editor.apply();
     }
@@ -337,9 +412,8 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         int i = 0;
         for(String keyMap : preferences.getAll().keySet()){
             if(isNumeric(keyMap)){
-                Log.d("TAG",keyMap);
                 uriText = preferences.getString(keyMap,null);
-                imageList.add(Uri.parse(uriText));
+                imageList.put(Integer.parseInt(keyMap),Uri.parse(uriText));
             }
         }
     }
