@@ -1,16 +1,19 @@
 package com.example.memories;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -18,10 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,6 +52,7 @@ public class GameActivity extends AppCompatActivity {
     Map<ImageView,Integer> imageViewMap = new HashMap<>();
     Map<EasyFlipView, Boolean> easyFlipViewBooleanMap = new HashMap<EasyFlipView, Boolean>();
     Map<Integer, Bitmap> imageRawBitmapMap = new HashMap<Integer, Bitmap>();
+    Map<Integer, String> infoImageMap = new HashMap<Integer,String>();
     public MediaPlayer mp;
     //Chronometer and nb of tries
     int nbTries = 0;
@@ -97,6 +103,7 @@ public class GameActivity extends AppCompatActivity {
             imageViewMap.put(imageCard1, i);
             imageViewMap.put(imageCard2, i);
             imageRawBitmapMap.put(i, imageIter.imageBitmapRaw);
+            infoImageMap.put(i, imageIter.infoAboutImage);
             i++;
         }
         for(ImageView imageIcon : imageViewMap.keySet()){
@@ -155,9 +162,13 @@ public class GameActivity extends AppCompatActivity {
                                         flippedCard1.setFlipEnabled(false);
                                         flippedCard2.setFlipEnabled(false);
                                         ImageView imagePopup = new ImageView(GameActivity.this);
+                                        TextView infoAboutImagePopup = new TextView(GameActivity.this);
+                                        infoAboutImagePopup.setPadding(10,0,0,0);
+                                        infoAboutImagePopup.setText(infoImageMap.get(imageViewMap.get(imageView1)));
+                                        Log.d("TAG", "Texte "+infoAboutImagePopup.getText());
                                         imagePopup.setImageBitmap(imageRawBitmapMap.get(imageViewMap.get(imageView1)));
                                         imagePopup.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                                        showImage(imagePopup);
+                                        showImage2(imagePopup, infoAboutImagePopup);
 
                                     }
                                 }
@@ -218,7 +229,7 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    public void showImage(ImageView imageView) {
+    public void showImage(ImageView imageView, TextView textView) {
         Dialog builder = new Dialog(this);
         builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
         builder.getWindow().setBackgroundDrawable(
@@ -246,6 +257,33 @@ public class GameActivity extends AppCompatActivity {
         builder.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
 
         builder.show();
+    }
+    public void showImage2(ImageView imageView, TextView textView){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(imageView);
+        linearLayout.addView(textView);
+        LinearLayout.LayoutParams paramsImage = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramsText = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        imageView.setLayoutParams(paramsImage);
+        textView.setLayoutParams(paramsText);
+        if(textView.getText().equals(""))
+            textView.setText("Aucune information à propos de cette image");
+        builder.setView(linearLayout);
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if(easyFlipViewBooleanMap.isEmpty()){
+                    //WIN
+                    onGameWin();
+                }
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.getWindow().getAttributes().windowAnimations=R.style.MyDialogAnimation;
+        alert.show();
     }
 
     public void showRestartMenu() {
