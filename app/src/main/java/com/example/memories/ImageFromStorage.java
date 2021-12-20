@@ -18,18 +18,19 @@ public class ImageFromStorage {
     public Bitmap imageBitmapRaw;
     public String infoAboutImage;
     public ContentResolver contentResolver;
-    int imageIconPxSize;
+    int imageIconPxSize, maxRawSize;
     Context context;
-    public ImageFromStorage(Uri imageUri, String infoAboutImage_, Context context_, int imageIconPxSize_){
+    public ImageFromStorage(Uri imageUri, String infoAboutImage_, Context context_, int imageIconPxSize_, int maxRawSize_){
         context =context_;
         contentResolver = context.getContentResolver();
         imageIconPxSize = imageIconPxSize_;
+        maxRawSize = maxRawSize_;
         setImageWithUri(imageUri, infoAboutImage_);
     }
     public void setImageWithUri(Uri imageUri, String infoAboutImage_){
         try {
-            imageBitmapRaw = MediaStore.Images.Media.getBitmap(contentResolver, imageUri);
-            imageBitmapForIcon = getCorrectlyOrientedImage(context,imageUri);
+            imageBitmapRaw = getCorrectlyOrientedImage(context,imageUri, maxRawSize);
+            imageBitmapForIcon = getCorrectlyOrientedImage(context,imageUri, imageIconPxSize);
             infoAboutImage = infoAboutImage_;
             Log.d("TAG","JE SUIS LA"+Integer.toString(imageIconPxSize));
         } catch (IOException e) {
@@ -54,7 +55,7 @@ public class ImageFromStorage {
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
-    public  Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri) throws IOException {
+    public  Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri, int MAX_IMAGE_DIMENSION_) throws IOException {
         InputStream is = context.getContentResolver().openInputStream(photoUri);
         BitmapFactory.Options dbo = new BitmapFactory.Options();
         dbo.inJustDecodeBounds = true;
@@ -74,7 +75,7 @@ public class ImageFromStorage {
 
         Bitmap srcBitmap;
         is = context.getContentResolver().openInputStream(photoUri);
-        int MAX_IMAGE_DIMENSION = imageIconPxSize;
+        int MAX_IMAGE_DIMENSION = MAX_IMAGE_DIMENSION_;
         if (rotatedWidth > MAX_IMAGE_DIMENSION || rotatedHeight > MAX_IMAGE_DIMENSION) {
             float widthRatio = ((float) rotatedWidth) / ((float) MAX_IMAGE_DIMENSION);
             float heightRatio = ((float) rotatedHeight) / ((float) MAX_IMAGE_DIMENSION);

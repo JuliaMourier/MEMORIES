@@ -21,14 +21,15 @@ public class SelectedImages {
 
     Map<String, String> selectedImagesURI;
     Map<String, String> selectedImagesDescription;
-    int imageIconPxSize;
+    int imageIconPxSize, maxRawSize;
 
     public int getSelectedImagesNumber(){
         return imageList.size();
     }
-    public SelectedImages(Context context, int imageIconPxSize_){
+    public SelectedImages(Context context, int imageIconPxSize_, int maxRawSize_){
         this.context=context;
         imageIconPxSize=imageIconPxSize_;
+        maxRawSize = maxRawSize_;
         selectedImagesPreferences = context.getSharedPreferences("selectedImages", Context.MODE_PRIVATE);
         selectedImagesDescriptionPreferences = context.getSharedPreferences("selectedImagesDescription", Context.MODE_PRIVATE);
         selectedImagesEditor = selectedImagesPreferences.edit();
@@ -48,7 +49,7 @@ public class SelectedImages {
                 selectedImageDescription = selectedImagesDescription.get(imageId);
             else
                 selectedImageDescription = "";
-            ImageFromStorage selectedImage = new ImageFromStorage(selectedImageUri, selectedImageDescription, context, imageIconPxSize);
+            ImageFromStorage selectedImage = new ImageFromStorage(selectedImageUri, selectedImageDescription, context, imageIconPxSize, maxRawSize);
             imageList.add(selectedImage);
         }
     }

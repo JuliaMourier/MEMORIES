@@ -62,7 +62,7 @@ public class GameActivity extends AppCompatActivity {
     int columnCount, cardIconPxSize;
     Map<ImageView,Integer> imageViewMap = new HashMap<>();
     Map<EasyFlipView, Boolean> easyFlipViewBooleanMap = new HashMap<EasyFlipView, Boolean>();
-    boolean flippingCard = false;
+    Map<Integer, Bitmap> imageRawBitmapMap = new HashMap<Integer, Bitmap>();
     public MediaPlayer mp;
     //Chronometer and nb of tries
     int nbTries = 0;
@@ -81,7 +81,7 @@ public class GameActivity extends AppCompatActivity {
         columnCount=3;
         cardIconPxSize = (int)(outMetrics.widthPixels/columnCount);
 
-        selectedImagesLoader = new SelectedImages(this, cardIconPxSize);
+        selectedImagesLoader = new SelectedImages(this, cardIconPxSize, outMetrics.widthPixels);
         selectedImagesFromStorage = selectedImagesLoader.imageList;
         cardGrid = findViewById(R.id.card_grid);
 
@@ -93,6 +93,7 @@ public class GameActivity extends AppCompatActivity {
             imageCard2.setImageBitmap(imageIter.getImage());
             imageViewMap.put(imageCard1, i);
             imageViewMap.put(imageCard2, i);
+            imageRawBitmapMap.put(i, imageIter.imageBitmapRaw);
             i++;
         }
         for(ImageView imageIcon : imageViewMap.keySet()){
@@ -150,9 +151,9 @@ public class GameActivity extends AppCompatActivity {
                                         easyFlipViewBooleanMap.remove(flippedCard2);
                                         flippedCard1.setFlipEnabled(false);
                                         flippedCard2.setFlipEnabled(false);
-                                        Bitmap bm=((BitmapDrawable)imageView1.getDrawable()).getBitmap();
                                         ImageView imagePopup = new ImageView(GameActivity.this);
-                                        imagePopup.setImageBitmap(bm);
+                                        imagePopup.setImageBitmap(imageRawBitmapMap.get(imageViewMap.get(imageView1)));
+                                        imagePopup.setScaleType(ImageView.ScaleType.CENTER_CROP);
                                         showImage(imagePopup);
 
                                     }
@@ -168,8 +169,6 @@ public class GameActivity extends AppCompatActivity {
                                 }
                             }
                         }
-
-                        flippingCard=false;
                     }
                     return true;
                 }
