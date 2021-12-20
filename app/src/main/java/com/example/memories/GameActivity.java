@@ -75,15 +75,34 @@ public class GameActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        int nbCards = this.getIntent().getIntExtra("nbCards",8);
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics ();
         display.getMetrics(outMetrics);
-        columnCount=3;
+
+        cardGrid = findViewById(R.id.card_grid);
+
+
+        //Get height of the screen
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int supposedcardIconPxSize = (int)(outMetrics.widthPixels/3);
+        Double nbRowSupposed = Math.floor(2*nbCards/3);
+
+        int heightOfAllCardsFor3Columns = (int)(nbRowSupposed*supposedcardIconPxSize); //Height of all cards if 3 columns
+        if(heightOfAllCardsFor3Columns > screenHeight){//If the height is going to be too much
+            columnCount = 4; //Set a fourth column
+            cardGrid.setColumnCount(4); //Set 4 columns the GridLayout
+        }
+        else {
+            columnCount=3; //Set 3 columns
+            cardGrid.setColumnCount(3);
+        }
         cardIconPxSize = (int)(outMetrics.widthPixels/columnCount);
 
         selectedImagesLoader = new SelectedImages(this, cardIconPxSize, outMetrics.widthPixels);
         selectedImagesFromStorage = selectedImagesLoader.imageList;
-        cardGrid = findViewById(R.id.card_grid);
 
         int i =0;
         for(ImageFromStorage imageIter : selectedImagesFromStorage){
@@ -259,7 +278,7 @@ public class GameActivity extends AppCompatActivity {
         });
         Button restartView = new Button(getApplicationContext());
         restartView.setText("RECOMMENCER");
-        restartView.setTextSize(42);
+        restartView.setTextSize(36);
         restartView.setPadding(100, 100,100,100);
 
         restartView.setOnClickListener(new View.OnClickListener() {
@@ -272,7 +291,7 @@ public class GameActivity extends AppCompatActivity {
         });
         Button menuView = new Button(getApplicationContext());
         menuView.setText("MENU");
-        menuView.setTextSize(42);
+        menuView.setTextSize(36);
         menuView.setPadding(100, 100,100,100);
         menuView.setOnClickListener(new View.OnClickListener() {
             @Override

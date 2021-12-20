@@ -117,6 +117,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(selectedCards==nbCards){
                     Intent memoriesGame = new Intent(ShowImagesFromFolderActivity.this, GameActivity.class);
+                    memoriesGame.putExtra("nbCards", nbCards);
                     ShowImagesFromFolderActivity.this.startActivity(memoriesGame);
                 }
             }
