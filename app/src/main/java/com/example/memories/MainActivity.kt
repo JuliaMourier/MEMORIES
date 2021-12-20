@@ -1,31 +1,23 @@
 package com.example.memories
 
 import android.app.ActionBar
-import android.content.Intent
 import android.graphics.Color
 import android.media.MediaPlayer
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.os.Bundle
 import android.os.Handler
-import android.os.PersistableBundle
 import android.os.SystemClock
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import com.example.memories.R
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.view.marginLeft
+import android.widget.Button
+import android.widget.GridLayout
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.example.memories.Database.FirebaseActivity
 import com.example.memories.R.drawable.*
 import nl.dionsegijn.konfetti.KonfettiView
 import nl.dionsegijn.konfetti.models.Shape
 import nl.dionsegijn.konfetti.models.Size
-import org.w3c.dom.Text
-import java.util.LinkedList
-
-
 
 
 class MainActivity : AppCompatActivity() {

@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,6 @@ public class ImageFromStorage {
             imageBitmapRaw = getCorrectlyOrientedImage(context,imageUri, maxRawSize);
             imageBitmapForIcon = getCorrectlyOrientedImage(context,imageUri, imageIconPxSize);
             infoAboutImage = infoAboutImage_;
-            Log.d("TAG","JE SUIS LA"+Integer.toString(imageIconPxSize));
         } catch (IOException e) {
             e.printStackTrace();
         }
