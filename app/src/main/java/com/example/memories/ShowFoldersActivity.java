@@ -48,8 +48,8 @@ public class ShowFoldersActivity extends AppCompatActivity {
     ArrayList<String> foldersNameList=new ArrayList<String>();
     AlertDialog.Builder builder, builder1;
     ArrayList<ImageButton> deleteButtonList = new ArrayList<ImageButton>();
-    SharedPreferences preferences, selectedImagesPreferences;
-    SharedPreferences.Editor editor;
+    SharedPreferences preferences, selectedImagesPreferences, selectedImagesDescriptionPreferences;
+    SharedPreferences.Editor editor, selectedImagesEditor, selectedImagesDescriptionEditor;
     private int STORAGE_PERMISSION_CODE = 1;
     private static final String SHARED_PREF_USER_INFO = "folderNames";
     boolean selectionMode;
@@ -65,7 +65,9 @@ public class ShowFoldersActivity extends AppCompatActivity {
         preferences = getSharedPreferences(SHARED_PREF_USER_INFO, MODE_PRIVATE);
         editor = preferences.edit();
         selectedImagesPreferences = getSharedPreferences("selectedImages", MODE_PRIVATE);
-
+        selectedImagesDescriptionPreferences = getSharedPreferences("selectedImagesDescription", MODE_PRIVATE);
+        selectedImagesEditor = selectedImagesPreferences.edit();
+        selectedImagesDescriptionEditor = selectedImagesDescriptionPreferences.edit();
         selectionMode = this.getIntent().getBooleanExtra("selectionMode",false);
         nbCards = this.getIntent().getIntExtra("nbCards",0)/2;
         this.loadFoldersNameFromStorage();
@@ -148,6 +150,18 @@ public class ShowFoldersActivity extends AppCompatActivity {
                                     foldersNameList.remove(folderNameText);
                                     ShowFoldersActivity.this.saveFoldersNameOnStorage();
                                     ShowFoldersActivity.this.setAllDeleteButtonsInvisible();
+                                    for(String selectedImageKey : selectedImagesPreferences.getAll().keySet()){
+                                        if(selectedImageKey.indexOf(folderNameText)==0){
+                                            selectedImagesEditor.remove(selectedImageKey);
+                                            selectedImagesEditor.apply();
+                                        }
+                                    }
+                                    for(String selectedImageDescriptionKey : selectedImagesDescriptionPreferences.getAll().keySet()){
+                                        if(selectedImageDescriptionKey.indexOf(folderNameText)==0){
+                                            selectedImagesDescriptionEditor.remove(selectedImageDescriptionKey);
+                                            selectedImagesDescriptionEditor.apply();
+                                        }
+                                    }
                                     File file = new File(ShowFoldersActivity.this.getFilesDir().getParent() + File.separator + "shared_prefs"+"/"+folderNameText+".xml");
                                     file.delete();
                                 }
