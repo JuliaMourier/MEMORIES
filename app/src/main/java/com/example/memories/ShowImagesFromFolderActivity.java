@@ -154,7 +154,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             this.addImagetoGrid(imageUri,false, i);
         }
     }
-    public void addImagetoGrid(Uri imageUri, boolean saveOnStorage, int imageId){
+    public int addImagetoGrid(Uri imageUri, boolean saveOnStorage, int imageId){
         ShowImagesFromFolderActivity activity = ShowImagesFromFolderActivity.this;
         Bitmap bitmap = null;
         ImageView imageView = new ImageView(activity);
@@ -164,7 +164,16 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             imageView.setImageBitmap(bitmapScaled);
         } catch (IOException e) {
             e.printStackTrace();
-            imageView.setImageURI(imageUri);
+            editor.remove(Integer.toString(imageId));
+            editor.remove(Integer.toString(imageId)+"_comment");
+            editor.remove(Integer.toString(imageId)+"_selected");
+            selectedImagesEditor.remove(folderName+"_"+Integer.toString(imageId));
+            selectedImagesDescriptionEditor.remove(folderName+"_"+Integer.toString(imageId));
+            editor.apply();
+            selectedImagesEditor.apply();
+            selectedImagesDescriptionEditor.apply();
+            return -1;
+
         }
         //imageView.setImageURI(imageUri);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -188,7 +197,6 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
         paramsImage.gravity = Gravity.CENTER_HORIZONTAL;
         if(selectionMode){
             if(selectedImageID.contains(imageId)){
-                Log.d("TAG", "JE SUIS SEELECTIONE");
                 imageView.setColorFilter(Color.argb(90, 0, 0, 255));
                 selectedImageView.add(imageView);
             }
@@ -314,7 +322,7 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             activity.imageList.add(imageUri);
             activity.saveImagesOnStorage();
         }
-
+    return 1;
     }
     public void saveImagesOnStorage(){
         int n = imageList.size();
@@ -327,11 +335,11 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
     public void loadImagesFromStorage(){
         String uriText="a";
         int i = 0;
-        while(uriText!=null){
-            uriText = preferences.getString(Integer.toString(i),null);
-            if(uriText!=null){
+        for(String keyMap : preferences.getAll().keySet()){
+            if(isNumeric(keyMap)){
+                Log.d("TAG",keyMap);
+                uriText = preferences.getString(keyMap,null);
                 imageList.add(Uri.parse(uriText));
-                i++;
             }
         }
     }
@@ -346,6 +354,17 @@ public class ShowImagesFromFolderActivity extends AppCompatActivity {
             }
             i++;
         }
+    }
+    public static boolean isNumeric(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            double d = Double.parseDouble(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
     public void setAllDeleteButtonVisibility(boolean visibilityBool){
         int n = deleteButtonList.size();
